@@ -1,0 +1,1 @@
+export { default, type ModuleId } from '../../hubblock-react/src/Navbar'

@@ -1,0 +1,7 @@
+streamlit
+crypto
+ecdsa
+pandas
+networkx
+matplotlib
+"C:\Users\Admin\Downloads\avatar-nen-trang-hub-2022.webp"

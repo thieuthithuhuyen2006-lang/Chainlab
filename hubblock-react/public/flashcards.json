@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1,
+    "category": "Mật mã học",
+    "question": "SHA-256 tạo đầu ra có độ dài bao nhiêu?",
+    "answer": "SHA-256 tạo digest 256 bit, tương đương 64 ký tự hệ thập lục phân, bất kể độ dài dữ liệu đầu vào."
+  },
+  {
+    "id": 2,
+    "category": "Mật mã học",
+    "question": "Tính chất avalanche của hàm băm là gì?",
+    "answer": "Một thay đổi rất nhỏ ở đầu vào thường làm khoảng một nửa số bit đầu ra thay đổi khó dự đoán. Đây là xu hướng xác suất, không phải bảo đảm chính xác 50% cho mọi cặp đầu vào."
+  },
+  {
+    "id": 3,
+    "category": "Mật mã học",
+    "question": "Hash khác encryption ở điểm nào?",
+    "answer": "Encryption có thể giải mã bằng khóa phù hợp; hash là hàm một chiều và không có thao tác giải mã để khôi phục đầu vào ban đầu."
+  },
+  {
+    "id": 4,
+    "category": "Mật mã học",
+    "question": "Chữ ký số dùng private key và public key như thế nào?",
+    "answer": "Người ký tạo chữ ký bằng private key. Người nhận dùng public key tương ứng để xác minh chữ ký và kiểm tra message có bị thay đổi hay không."
+  },
+  {
+    "id": 5,
+    "category": "Mật mã học",
+    "question": "Pre-image resistance bảo vệ điều gì?",
+    "answer": "Từ một digest đã biết, rất khó tìm ra thông điệp đầu vào tạo nên digest đó; với SHA-256 không gian đầu ra có 2^256 khả năng."
+  },
+  {
+    "id": 6,
+    "category": "Cấu trúc Block",
+    "question": "Một block blockchain thường chứa những trường nào?",
+    "answer": "Tùy giao thức, block thường có chiều cao hoặc index, timestamp, dữ liệu/giao dịch, hash của block trước và hash/header của chính nó."
+  },
+  {
+    "id": 7,
+    "category": "Cấu trúc Block",
+    "question": "Genesis Block là gì?",
+    "answer": "Genesis Block là block đầu tiên của một blockchain. Nó không trỏ tới block trước trong cùng chain và thường được cấu hình sẵn khi khởi tạo mạng."
+  },
+  {
+    "id": 8,
+    "category": "Cấu trúc Block",
+    "question": "Previous Hash tạo ra liên kết chuỗi như thế nào?",
+    "answer": "Block mới lưu hash của block đứng trước. Nếu nội dung block cũ đổi, hash mới không còn khớp Previous Hash đã lưu ở block kế tiếp."
+  },
+  {
+    "id": 9,
+    "category": "Cấu trúc Block",
+    "question": "Nonce được dùng làm gì trong Proof of Work?",
+    "answer": "Miner thay đổi nonce để tạo nhiều block hash khác nhau cho đến khi tìm được hash thỏa điều kiện độ khó của mạng."
+  },
+  {
+    "id": 10,
+    "category": "Cấu trúc Block",
+    "question": "Timestamp ISO 8601 và Unix Epoch biểu diễn thời gian ra sao?",
+    "answer": "ISO 8601 là chuỗi ngày giờ chuẩn, ví dụ 2026-09-26T10:20:30.000Z. Unix Epoch là số mili giây hoặc giây tính từ 1970-01-01 UTC."
+  },
+  {
+    "id": 11,
+    "category": "Cấu trúc Block",
+    "question": "Merkle Root trong header block đại diện cho điều gì?",
+    "answer": "Merkle Root là hash gốc tóm tắt các transaction trong block; thay đổi một transaction sẽ làm thay đổi leaf hash và các node cha trên nhánh tương ứng."
+  },
+  {
+    "id": 12,
+    "category": "Ethereum & DApp",
+    "question": "EVM là gì?",
+    "answer": "Ethereum Virtual Machine là môi trường thực thi bytecode của smart contract trên các node Ethereum theo quy tắc xác định."
+  },
+  {
+    "id": 13,
+    "category": "Ethereum & DApp",
+    "question": "Gas trong Ethereum đo lường điều gì?",
+    "answer": "Gas đo lượng công việc tính toán cần để thực hiện transaction hoặc smart contract. Phí thực trả phụ thuộc gas sử dụng và giá gas."
+  },
+  {
+    "id": 14,
+    "category": "Ethereum & DApp",
+    "question": "DApp khác ứng dụng web tập trung ở đâu?",
+    "answer": "DApp thường kết hợp giao diện client với smart contract hoặc dịch vụ phi tập trung; dữ liệu và logic quan trọng có thể được xác minh trên blockchain."
+  },
+  {
+    "id": 15,
+    "category": "Ethereum & DApp",
+    "question": "Smart contract là gì?",
+    "answer": "Smart contract là chương trình được triển khai trên blockchain và thực thi theo quy tắc của nền tảng khi nhận transaction phù hợp."
+  },
+  {
+    "id": 16,
+    "category": "Ethereum & DApp",
+    "question": "Wei là đơn vị gì?",
+    "answer": "Wei là đơn vị nhỏ nhất thường dùng để biểu diễn ETH. 1 ETH bằng 10^18 Wei."
+  },
+  {
+    "id": 17,
+    "category": "Ethereum & DApp",
+    "question": "Private key của ví Ethereum cần được bảo vệ thế nào?",
+    "answer": "Private key phải được giữ bí mật và bảo vệ an toàn. Ai kiểm soát private key có thể ký transaction cho địa chỉ tương ứng."
+  },
+  {
+    "id": 18,
+    "category": "Đồng thuận PoS",
+    "question": "Proof of Work chọn miner thắng như thế nào?",
+    "answer": "Các miner thử nhiều nonce để tìm hash thỏa difficulty target; mạng chấp nhận block hợp lệ theo quy tắc đồng thuận."
+  },
+  {
+    "id": 19,
+    "category": "Đồng thuận PoS",
+    "question": "Proof of Stake dùng stake trong lựa chọn validator ra sao?",
+    "answer": "Stake có thể làm trọng số lựa chọn validator lớn hơn, nhưng thuật toán cụ thể còn phụ thuộc giao thức và tính ngẫu nhiên của mạng."
+  },
+  {
+    "id": 20,
+    "category": "Đồng thuận PoS",
+    "question": "Ethereum PoS chia thời gian thành slot và epoch như thế nào?",
+    "answer": "Ethereum mainnet định nghĩa slot khoảng 12 giây và một epoch gồm 32 slot. Các giá trị trong simulator chỉ mô phỏng khái niệm này."
+  },
+  {
+    "id": 21,
+    "category": "Đồng thuận PoS",
+    "question": "Block proposer và attester có vai trò gì?",
+    "answer": "Proposer đề xuất block cho slot. Attesters kiểm tra chain head/block và gửi vote theo quy tắc của giao thức."
+  },
+  {
+    "id": 22,
+    "category": "Đồng thuận PoS",
+    "question": "Slashing xử lý hành vi double-sign như thế nào?",
+    "answer": "Giao thức có thể phạt stake và loại validator vi phạm khỏi hoạt động. Cách phạt thực tế phụ thuộc điều kiện và quy tắc của mạng."
+  },
+  {
+    "id": 23,
+    "category": "Đồng thuận PoS",
+    "question": "RANDAO góp phần gì vào lựa chọn validator?",
+    "answer": "Trong Ethereum, các reveal của proposer góp vào randomness mix dùng cho một số lựa chọn giao thức; đây không đơn giản là lấy stake nhân Math.random."
+  },
+  {
+    "id": 24,
+    "category": "Tài sản số",
+    "question": "Utility Token thường được dùng để làm gì?",
+    "answer": "Utility Token cung cấp quyền truy cập hoặc chức năng trong một sản phẩm/dịch vụ, ví dụ thanh toán phí hoặc sử dụng tính năng của hệ thống."
+  },
+  {
+    "id": 25,
+    "category": "Tài sản số",
+    "question": "ERC-20 mô tả loại tài sản nào?",
+    "answer": "ERC-20 là tiêu chuẩn interface phổ biến cho fungible token trên Ethereum; các token cùng hợp đồng có thể thay thế lẫn nhau theo đơn vị."
+  },
+  {
+    "id": 26,
+    "category": "Tài sản số",
+    "question": "ERC-721 và NFT có đặc điểm gì?",
+    "answer": "ERC-721 là tiêu chuẩn cho token không thể thay thế, mỗi token ID đại diện một tài sản riêng có trạng thái sở hữu riêng."
+  }
+]

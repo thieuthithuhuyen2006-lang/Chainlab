@@ -1,0 +1,28 @@
+import { ArrowUpRight, Blocks, BookOpenCheck, Cpu, Fingerprint, Network, ShieldCheck, Sparkles, WalletCards } from 'lucide-react'
+
+const pillars = [
+  { title: 'Cryptography', detail: 'SHA-256, RSA/ECDSA, signatures and Merkle proofs.', icon: Fingerprint, color: 'text-emerald-300' },
+  { title: 'Ledger integrity', detail: 'Block V1/V2 schemas, metadata, hash links and tamper validation.', icon: Blocks, color: 'text-sky-300' },
+  { title: 'Consensus & networking', detail: 'Multi-worker proof-of-work, P2P latency and Ethereum PoS concepts.', icon: Network, color: 'text-amber-200' },
+  { title: 'Programmable assets', detail: 'A bounded contract-action sandbox with ERC-20 balances and ERC-721 ownership.', icon: WalletCards, color: 'text-rose-200' },
+]
+
+export default function TabProject() {
+  return (
+    <div className="space-y-5">
+      <section className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-9">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-emerald-300/[0.045] blur-3xl" />
+        <div className="relative max-w-3xl"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.14em] text-emerald-300"><Sparkles size={13} />HUB · Student learning simulator</span><h3 className="mt-4 text-2xl font-semibold text-slate-100 sm:text-3xl">HUB Blockchain Lab</h3><p className="mt-3 text-sm leading-6 text-slate-400">Phòng lab tương tác giúp người học quan sát cách hash, cấu trúc block, khóa công khai, đồng thuận và tài sản số phối hợp trong một hệ thống blockchain.</p><p className="mt-4 flex items-start gap-2 text-[10px] leading-5 text-slate-500"><ShieldCheck size={13} className="mt-0.5 shrink-0 text-emerald-300" />Mọi khóa, giao dịch, mining, consensus và asset ở đây là mô phỏng cục bộ; không kết nối ví hoặc mạng mainnet.</p></div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2" aria-label="Project learning pillars">{pillars.map(({ title, detail, icon: Icon, color }, index) => <article key={title} className="flex gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5"><span className={`grid size-9 shrink-0 place-items-center rounded-xl border border-slate-700/80 bg-slate-950/60 ${color}`}><Icon size={16} /></span><div><div className="flex items-center gap-2"><h4 className="text-xs font-semibold text-slate-100">{title}</h4><span className="font-mono text-[8px] text-slate-600">0{index + 1}</span></div><p className="mt-1.5 text-[10px] leading-5 text-slate-400">{detail}</p></div></article>)}</section>
+
+      <section className="grid gap-4 xl:grid-cols-[1fr_.8fr]">
+        <article className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5 sm:p-6"><header className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-lg border border-sky-300/20 bg-sky-300/[0.06] text-sky-200"><BookOpenCheck size={16} /></span><div><h3 className="text-xs font-semibold text-slate-100">Learning objectives</h3><p className="mt-1 font-mono text-[8px] uppercase text-slate-600">Concept → interaction → observation</p></div></header><ul className="mt-4 space-y-2.5 text-[10px] leading-5 text-slate-400"><li className="flex gap-2"><span className="text-emerald-300">01</span>Giải thích được vì sao hash và Merkle root giúp phát hiện dữ liệu bị đổi.</li><li className="flex gap-2"><span className="text-emerald-300">02</span>Phân biệt ký bằng private key, xác minh bằng public key và mã hóa RSA-OAEP.</li><li className="flex gap-2"><span className="text-emerald-300">03</span>So sánh mining song song với độ trễ lan truyền giữa các peer.</li><li className="flex gap-2"><span className="text-emerald-300">04</span>Quan sát stake weight, proposer, attestation, rewards và slashing trong PoS.</li></ul></article>
+        <article className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5 sm:p-6"><header className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-lg border border-amber-300/20 bg-amber-300/[0.06] text-amber-100"><Cpu size={16} /></span><div><h3 className="text-xs font-semibold text-slate-100">Technology stack</h3><p className="mt-1 font-mono text-[8px] uppercase text-slate-600">Browser-first lab</p></div></header><div className="mt-4 flex flex-wrap gap-2">{['React', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Crypto-JS', 'Web Crypto API', 'Web Workers', 'Lucide'].map((item) => <span key={item} className="rounded-lg border border-slate-800 bg-[#0b0f19]/70 px-2.5 py-1.5 font-mono text-[8px] text-slate-400">{item}</span>)}</div><div className="mt-5 border-t border-slate-800 pt-3"><p className="text-[9px] leading-5 text-slate-500">EVM actions are intentionally limited to transfer/mint/burn teaching rules; no Solidity compiler, gas model, or real contract deployment.</p></div></article>
+      </section>
+
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6"><div className="mb-3 flex items-center gap-2"><Network size={14} className="text-violet-300" /><h3 className="text-xs font-semibold text-slate-100">Reference projects</h3></div><div className="flex flex-wrap gap-x-5 gap-y-2"><a href="https://hubblock.onrender.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[9px] text-slate-400 transition hover:text-rose-200">HubBlock · SHA-256 & learning UI <ArrowUpRight size={11} /></a></div></section>
+    </div>
+  )
+}
