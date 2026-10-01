@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Activity, AlertTriangle, BadgeCheck, Blocks, Check, CircleAlert, Coins, Gavel, Network, Radio, ShieldAlert, ShieldCheck, Users, Vote, Zap } from 'lucide-react'
 import CryptoJS from 'crypto-js'
-import TabMultiWalletMining from './TabMultiWalletMining'
+import { hashBlock, hashTransaction, merkleRoot, type Block } from '../lib/chain'
+import { appendMinedBlock, getChainSnapshot } from '../lib/chainStore'
+import { useChain } from '../lib/useChain'
 
 type Validator = {
   id: string
@@ -25,11 +27,11 @@ type NetworkEvent = {
 type SlotPhase = 'idle' | 'proposed' | 'attesting' | 'finalized'
 
 const startingValidators: Validator[] = [
-  { id: 'alice', name: 'Alice Chen', address: '0x7A3F...91C2', stake: 32, rewards: 0, slashedAmount: 0, locked: false },
-  { id: 'bruno', name: 'Bruno Silva', address: '0x2B8E...0D44', stake: 24, rewards: 0, slashedAmount: 0, locked: false },
-  { id: 'chika', name: 'Chika Mori', address: '0x4D10...A567', stake: 16, rewards: 0, slashedAmount: 0, locked: false },
-  { id: 'dara', name: 'Dara Nguyen', address: '0x91C2...3F8B', stake: 12, rewards: 0, slashedAmount: 0, locked: false },
-  { id: 'emil', name: 'Emil Fischer', address: '0xC521...2AB7', stake: 8, rewards: 0, slashedAmount: 0, locked: false },
+  { id: 'alice', name: 'Alice Chen', address: `0x${CryptoJS.SHA256('Alice Chen').toString().slice(-40)}`, stake: 32, rewards: 0, slashedAmount: 0, locked: false },
+  { id: 'bruno', name: 'Bruno Silva', address: `0x${CryptoJS.SHA256('Bruno Silva').toString().slice(-40)}`, stake: 24, rewards: 0, slashedAmount: 0, locked: false },
+  { id: 'chika', name: 'Chika Mori', address: `0x${CryptoJS.SHA256('Chika Mori').toString().slice(-40)}`, stake: 16, rewards: 0, slashedAmount: 0, locked: false },
+  { id: 'dara', name: 'Dara Nguyen', address: `0x${CryptoJS.SHA256('Dara Nguyen').toString().slice(-40)}`, stake: 12, rewards: 0, slashedAmount: 0, locked: false },
+  { id: 'emil', name: 'Emil Fischer', address: `0x${CryptoJS.SHA256('Emil Fischer').toString().slice(-40)}`, stake: 8, rewards: 0, slashedAmount: 0, locked: false },
 ]
 
 const proposerReward = 0.02
@@ -74,7 +76,8 @@ function StatCard({ label, value, detail, icon: Icon, tint }: { label: string; v
   )
 }
 
-function EthereumPoSLab() {
+export function EthereumPoSLab() {
+  const chain = useChain()
   const [validators, setValidators] = useState(startingValidators)
   const [slot, setSlot] = useState(0)
   const [phase, setPhase] = useState<SlotPhase>('idle')
@@ -160,7 +163,23 @@ function EthereumPoSLab() {
     setAttestedIds(attesterIds)
     setPhase('finalized')
     setBlocksProduced((current) => current + 1)
-    addEvent('attestation', `Block #${blocksProduced + 1} finalized · ${attesters.length} attestations accepted.`, `${currentProposer.name} +${formatEth(proposerReward)} · committee +${formatEth(attesterReward)} each`)
+    const sharedChain = getChainSnapshot()
+    const latest = sharedChain.at(-1)!
+    const finalized: Block = {
+      index: sharedChain.length,
+      timestamp: new Date().toISOString(),
+      previousHash: latest.hash,
+      transactions: latest.transactions,
+      merkleRoot: merkleRoot(latest.transactions.map(hashTransaction)),
+      difficulty: latest.difficulty,
+      validator: currentProposer.address,
+      nonce: 0,
+      hash: '',
+      consensus: 'pos',
+    }
+    finalized.hash = hashBlock(finalized)
+    appendMinedBlock(finalized)
+    addEvent('attestation', `Block #${finalized.index} finalized · ${attesters.length} attestations accepted.`, `${currentProposer.name} +${formatEth(proposerReward)} · committee +${formatEth(attesterReward)} each`)
   }
 
   function simulateDoubleSign() {
@@ -226,7 +245,7 @@ function EthereumPoSLab() {
           <div className="mt-5 space-y-3">
             <FlowStep number="01" title="Propose block" detail={currentProposer ? `${currentProposer.name} selected by stake weight` : 'Weighted random validator selection'} active={phase !== 'idle'} complete={phase === 'attesting' || phase === 'finalized'} icon={Network} />
             <FlowStep number="02" title="Attest & vote" detail={phase === 'finalized' ? `${attestedIds.length} validator votes accepted` : phase === 'attesting' ? `${attestedIds.length}/${Math.max(activeValidators.length - 1, 0)} P2P votes arrived` : 'Other active validators verify the block'} active={phase === 'attesting' || phase === 'finalized'} complete={phase === 'finalized'} icon={Vote} />
-            <FlowStep number="03" title="Finalize & reward" detail={phase === 'finalized' ? `Block #${blocksProduced} added to the chain` : 'Rewards issued after valid attestations'} active={phase === 'finalized'} complete={phase === 'finalized'} icon={Check} />
+            <FlowStep number="03" title="Finalize & reward" detail={phase === 'finalized' ? `Block #${chain.at(-1)?.index ?? 0} added to the shared chain` : 'Rewards issued after valid attestations'} active={phase === 'finalized'} complete={phase === 'finalized'} icon={Check} />
           </div>
 
           {phase === 'proposed' && currentProposer && <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.05] p-3"><div className="flex items-center gap-2 text-[10px] font-semibold text-emerald-200"><Zap size={13} />Slot {slot} proposer: {currentProposer.name}</div><p className="mt-1 text-[9px] leading-4 text-slate-500">{activeValidators.length - 1} validator còn lại sẵn sàng attest block này.</p></motion.div>}
@@ -286,19 +305,5 @@ function FlowStep({ number, title, detail, active, complete, icon: Icon }: { num
 }
 
 export default function TabPoS() {
-  const [activeLab, setActiveLab] = useState<'pos' | 'mining'>('pos')
-
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-slate-500">Consensus & mining workbench</p><p className="mt-1 text-[10px] text-slate-400">Chọn mô hình đồng thuận hoặc kiến trúc mining nhiều ví.</p></div>
-        <div role="tablist" aria-label="PoS và multi-wallet mining" className="inline-flex rounded-xl border border-slate-800 bg-slate-950/70 p-1">
-          <button id="tab-pos-consensus" type="button" role="tab" aria-selected={activeLab === 'pos'} aria-controls="panel-pos-consensus" onClick={() => setActiveLab('pos')} className={`inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-[10px] font-semibold transition ${activeLab === 'pos' ? 'bg-emerald-300/[0.1] text-emerald-100' : 'text-slate-500 hover:text-slate-200'}`}><ShieldCheck size={13} />Ethereum PoS</button>
-          <button id="tab-multi-wallet-mining" type="button" role="tab" aria-selected={activeLab === 'mining'} aria-controls="panel-multi-wallet-mining" onClick={() => setActiveLab('mining')} className={`inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-[10px] font-semibold transition ${activeLab === 'mining' ? 'bg-sky-300/[0.1] text-sky-100' : 'text-slate-500 hover:text-slate-200'}`}><Blocks size={13} />Multi-wallet mining</button>
-        </div>
-      </div>
-      <div id="panel-pos-consensus" role="tabpanel" aria-labelledby="tab-pos-consensus" hidden={activeLab !== 'pos'}><EthereumPoSLab /></div>
-      <div id="panel-multi-wallet-mining" role="tabpanel" aria-labelledby="tab-multi-wallet-mining" hidden={activeLab !== 'mining'}><TabMultiWalletMining /></div>
-    </div>
-  )
+  return <EthereumPoSLab />
 }

@@ -33,3 +33,27 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+#top[data-active-module='hash'] main > section:first-of-type { display: none; }
+#top[data-active-module='hash'] main > section:nth-of-type(2) { display: none; }
+#top[data-active-module='hash'] main > section:nth-of-type(3) > div:first-child { display: none; }
+
+#top[data-theme='light'] .sha256-demo { color: #0f172a; }
+#top[data-theme='light'] .sha256-demo :is(.sha-panel, .sha-card) { border-color: #cbd5e1; background-color: rgb(248 250 252 / 0.96); box-shadow: 0 8px 24px rgb(15 23 42 / 0.06); }
+#top[data-theme='light'] .sha256-demo :is(.bg-slate-950\/50, .bg-slate-950\/60, .bg-slate-950\/70, .bg-slate-900\/50, .bg-slate-900\/60, .bg-slate-900\/70, .bg-slate-900\/75, .bg-slate-900\/80, .bg-slate-800) { background-color: #f1f5f9; }
+#top[data-theme='light'] .sha256-demo [class~='bg-[#0b0f19]'] { background-color: #fff; }
+#top[data-theme='light'] .sha256-demo :is(.text-slate-100, .text-slate-200, .text-slate-300) { color: #172033 !important; }
+#top[data-theme='light'] .sha256-demo :is(.text-slate-400, .text-slate-500) { color: #475569 !important; }
+#top[data-theme='light'] .sha256-demo :is(.border-slate-700, .border-slate-800) { border-color: #cbd5e1; }
+#top[data-theme='light'] .sha256-demo :is(textarea, input, select) { color: #0f172a; }
+#top[data-theme='light'] .sha256-demo .text-emerald-100 { color: #065f46 !important; }
+#top[data-theme='light'] .sha256-demo .text-emerald-200 { color: #047857 !important; }
+#top[data-theme='light'] .sha256-demo .text-sky-100 { color: #075985 !important; }
+#top[data-theme='light'] .sha256-demo .text-sky-200 { color: #0369a1 !important; }
+#top[data-theme='light'] .sha256-demo .text-amber-100 { color: #92400e !important; }
+#top[data-theme='light'] .sha256-demo .text-amber-200 { color: #92400e !important; }
+
+#top[data-active-module='mining'] main > section:first-of-type,
+#top[data-active-module='mining'] main > section:nth-of-type(2) { display: none; }
+#top[data-active-module='mining'] main > section:nth-of-type(3) > div:first-child { display: none; }
+.mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(12px, 1em); }

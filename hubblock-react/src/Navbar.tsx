@@ -21,7 +21,7 @@ export default function Navbar({ activeTab, onTabChange, onProjectInfo }: Navbar
   const [logoUnavailable, setLogoUnavailable] = useState(false)
   const [avatarUnavailable, setAvatarUnavailable] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [language, setLanguage] = useState<'VN' | 'VI'>(() => localStorage.getItem('hubblock-language') === 'VN' ? 'VN' : 'VI')
+  const [language, setLanguage] = useState<'VN' | 'EN'>(() => localStorage.getItem('hubblock-language') === 'EN' ? 'EN' : 'VN')
 
   useEffect(() => {
     document.getElementById('top')?.setAttribute('data-theme', theme)
@@ -29,8 +29,9 @@ export default function Navbar({ activeTab, onTabChange, onProjectInfo }: Navbar
   }, [theme])
 
   useEffect(() => {
-    document.documentElement.lang = language === 'VN' ? 'vi-VN' : 'vi'
+    document.documentElement.lang = language === 'VN' ? 'vi-VN' : 'en'
     localStorage.setItem('hubblock-language', language)
+    window.dispatchEvent(new CustomEvent('hubblock-language-change', { detail: language }))
   }, [language])
 
   return (
@@ -56,7 +57,7 @@ export default function Navbar({ activeTab, onTabChange, onProjectInfo }: Navbar
 
         <div className="order-2 ml-auto flex shrink-0 items-center gap-2 lg:order-3 lg:ml-0">
           <div aria-label="Chọn ngôn ngữ" className="flex items-center gap-0.5 rounded-lg border border-purple-900/40 bg-slate-900/80 p-1">
-            {(['VN', 'VI'] as const).map((value) => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)} className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${language === value ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}>{value}</button>)}
+            {(['VN', 'EN'] as const).map((value) => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)} className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${language === value ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}>{value}</button>)}
           </div>
           <button type="button" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'} title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'} className="grid size-9 place-items-center rounded-lg border border-purple-900/40 bg-slate-900/80 text-violet-200 transition-colors hover:border-violet-400/50 hover:bg-violet-500/10">{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
           <div className="flex items-center gap-2 rounded-full border border-rose-300/20 bg-slate-900/80 px-2 py-1">

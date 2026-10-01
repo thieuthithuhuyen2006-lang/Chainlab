@@ -1,13 +1,12 @@
-import CryptoJS from 'crypto-js'
-
 export type PreimageWorkerRequest =
-  | { type: 'start'; targetHash: string; maxLength: number; charset: string }
+  | { type: 'start'; targetPrefix: string; maxLength: number; charset: string }
   | { type: 'cancel' }
 
 export type PreimageWorkerResponse =
-  | { type: 'progress'; attempts: number; elapsedMs: number }
+  | { type: 'progress'; attempts: number; elapsedMs: number; latest: string }
   | { type: 'found'; input: string; attempts: number; elapsedMs: number }
   | { type: 'not-found'; attempts: number; elapsedMs: number; maxAttempts: number }
+  | { type: 'cancelled' }
   | { type: 'error'; message: string }
 
 type WorkerScope = {
@@ -39,23 +38,25 @@ function generateCandidates(charset: string, maxLength: number): Generator<strin
   return recurse('')
 }
 
-async function search(message: PreimageWorkerRequest['start'], runId: number) {
+async function search(message: Extract<PreimageWorkerRequest, { type: 'start' }>, runId: number) {
   const startedAt = performance.now()
   let attempts = 0
-  const maxAttempts = 10_000_000
+  const maxAttempts = 5_000_000
   const charset = message.charset || 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const encoder = new TextEncoder()
 
   try {
     for (const candidate of generateCandidates(charset, message.maxLength)) {
       if (runId !== activeRun) {
-        workerScope.postMessage({ type: 'cancelled' as const })
+        workerScope.postMessage({ type: 'cancelled' })
         return
       }
 
-      const hash = CryptoJS.SHA256(candidate).toString(CryptoJS.enc.Hex)
+      const digest = await crypto.subtle.digest('SHA-256', encoder.encode(candidate))
+      const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
       attempts += 1
 
-      if (hash === message.targetHash) {
+      if (hash.startsWith(message.targetPrefix.toLowerCase())) {
         workerScope.postMessage({
           type: 'found',
           input: candidate,
@@ -65,8 +66,8 @@ async function search(message: PreimageWorkerRequest['start'], runId: number) {
         return
       }
 
-      if (attempts % 50000 === 0) {
-        workerScope.postMessage({ type: 'progress', attempts, elapsedMs: performance.now() - startedAt })
+      if (attempts % 256 === 0) {
+        workerScope.postMessage({ type: 'progress', attempts, elapsedMs: performance.now() - startedAt, latest: candidate })
         await new Promise((resolve) => setTimeout(resolve, 0))
       }
 
