@@ -19,7 +19,6 @@ const tabs: TabDefinition[] = [
 
 export default function Navbar({ activeTab, onTabChange, onProjectInfo }: NavbarProps) {
   const [logoUnavailable, setLogoUnavailable] = useState(false)
-  const [avatarUnavailable, setAvatarUnavailable] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [language, setLanguage] = useState<'VN' | 'EN'>(() => localStorage.getItem('hubblock-language') === 'EN' ? 'EN' : 'VN')
 
@@ -60,10 +59,6 @@ export default function Navbar({ activeTab, onTabChange, onProjectInfo }: Navbar
             {(['VN', 'EN'] as const).map((value) => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)} className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${language === value ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'}`}>{value}</button>)}
           </div>
           <button type="button" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'} title={theme === 'dark' ? 'Giao diện sáng' : 'Giao diện tối'} className="grid size-9 place-items-center rounded-lg border border-purple-900/40 bg-slate-900/80 text-violet-200 transition-colors hover:border-violet-400/50 hover:bg-violet-500/10">{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
-          <div className="flex items-center gap-2 rounded-full border border-rose-300/20 bg-slate-900/80 px-2 py-1">
-            {avatarUnavailable ? <span aria-label="Avatar Huyền" className="grid size-8 place-items-center rounded-full border border-rose-300/40 bg-gradient-to-br from-violet-500/50 to-pink-500/50 font-mono text-[10px] font-bold text-white">TH</span> : <img src="/huyen-avatar.svg" alt="Avatar Huyền" onError={() => setAvatarUnavailable(true)} className="size-8 rounded-full border border-rose-300/30 object-cover" />}
-            <span className="pr-1 text-sm font-medium text-slate-200">Huyền</span>
-          </div>
           <button type="button" onClick={onProjectInfo} aria-label="Thông tin dự án" title="Thông tin dự án" className="grid size-9 place-items-center rounded-lg border border-purple-900/40 bg-slate-900/80 text-slate-300 transition-colors hover:border-violet-400/50 hover:text-violet-200"><Info size={15} /></button>
         </div>
       </div>
