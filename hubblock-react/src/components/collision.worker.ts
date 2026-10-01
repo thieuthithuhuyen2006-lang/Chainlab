@@ -8,6 +8,7 @@ export type CollisionWorkerResponse =
   | { type: 'progress'; attempts: number; elapsedMs: number }
   | { type: 'found'; input1: string; input2: string; hash: string; attempts: number; elapsedMs: number }
   | { type: 'cancelled' }
+  | { type: 'not-found'; attempts: number; elapsedMs: number; maxAttempts: number }
   | { type: 'error'; message: string }
 
 type WorkerScope = {
@@ -28,7 +29,7 @@ workerScope.onmessage = (event) => {
   void search(event.data, runId)
 }
 
-async function search(message: CollisionWorkerRequest['start'], runId: number) {
+async function search(message: Extract<CollisionWorkerRequest, { type: 'start' }>, runId: number) {
   const startedAt = performance.now()
   let attempts = 0
   const hashMap = new Map<string, string>()

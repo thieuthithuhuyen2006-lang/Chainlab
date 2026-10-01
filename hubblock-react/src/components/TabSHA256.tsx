@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowRight, Check, Copy, Fingerprint, LockKeyhole, Play, RotateCcw, Sigma, Square, Zap } from 'lucide-react'
+import { ArrowRight, Check, Copy, Fingerprint, LockKeyhole, Play, RotateCcw, ShieldAlert, Sigma, Square, Zap } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { ModuleId } from '../Navbar'
@@ -20,6 +20,7 @@ const translations = {
     runAgain: 'Băm lại lần nữa', run: 'Lần', same: '✓ Giống Run 1', different: 'Khác Run 1', maxRuns: 'Đã đủ 5 lần chạy.',
     avalanche: 'Hiệu ứng tuyết lở (Avalanche effect)', defAvalanche: 'Thay đổi rất nhỏ ở đầu vào làm nhiều bit đầu ra đổi gần như ngẫu nhiên.', meaningAvalanche: 'Sửa một ký tự trong dữ liệu block sẽ làm hash đổi mạnh, giúp phát hiện can thiệp.', inputA: 'Đầu vào A', inputB: 'Đầu vào B', presetChar: 'Đổi 1 ký tự', presetBit: 'Đổi 1 bit', presetSpace: 'Thêm dấu cách cuối', presetCase: 'Đổi hoa/thường',
     hexDiff: 'Khác biệt ký tự hex', bits: 'Số bit khác biệt', ideal: 'Giá trị lý tưởng xấp xỉ 50%.', viewBits: 'Xem lưới 256 bit (16 × 16)', hideBits: 'Ẩn lưới bit', randomRun: 'Chạy 20 lần đổi ngẫu nhiên 1 bit', randomWorking: 'Đang chạy 20 phép thử…', randomMean: 'Trung bình bit khác', expected: 'Kỳ vọng khoảng 50%',
+    collision: 'Kháng va chạm (Collision resistance)', defCollision: 'Rất khó tìm được hai đầu vào khác nhau tạo ra cùng một giá trị băm.', meaningCollision: 'Mỗi khối hay giao dịch đều có dấu vân tay riêng, nên không thể tự ý thay đổi dữ liệu mà không bị phát hiện.', simSpace: 'Không gian hash mô phỏng', findCollision: 'Tìm va chạm', finding: 'Đang tìm…', waitingSearch: 'Chưa chạy phép thử.', collisionFound: 'Tìm thấy va chạm', shortHash: 'Short hash', expectedAttempts: 'Số phép thử kỳ vọng', conclusion: 'Hai đầu vào khác nhau có cùng short hash trong không gian mô phỏng.', simNote: 'Đây không phải va chạm thật của SHA-256. Bản demo cố tình rút ngắn không gian hash xuống', notFound: 'Không tìm thấy va chạm trong',
     preimage: 'Kháng tiền ảnh (Pre-image resistance)', defPreimage: 'Với hash cho trước, việc tìm một đầu vào tạo ra nó gần như không khả thi.', meaningPreimage: 'Không thể suy ra dữ liệu gốc từ hash; tính chất này là nền tảng cho PoW và địa chỉ ví.', oneWay: 'Không thể suy ngược', notEncryption: 'SHA-256 là hàm một chiều, không phải mã hóa nên không có “giải mã”.', tryReverse: 'Thử giải ngược hash', stop: 'Dừng', exact: 'Khớp toàn bộ hash hiện tại', prefix: 'Khớp tiền tố ngắn', prefixLength: 'Số ký tự hex cần khớp', attempts: 'Số lần đã thử', rate: 'Tốc độ', elapsed: 'Thời gian chạy', recent: 'Chuỗi vừa thử', waiting: 'Chưa chạy', searching: 'Đang thử trong Web Worker', found: 'Tìm thấy ứng viên', exhausted: 'Đã chạm giới hạn lượt thử; không tìm thấy.', stopped: 'Đã dừng phép thử.',
     estimateFull: 'Cần trung bình ~2^255 lần thử để tìm tiền ảnh đầy đủ.', estimateRate: 'Ở tốc độ đo được', estimateYears: 'thời gian ước tính', universe: 'Tuổi vũ trụ khoảng 1.4 × 10^10 năm.', estimatePrefix: 'Tiền tố dài hơn một ký tự cần nhiều hơn khoảng 16 lần phép thử.',
     fixed: 'Đầu ra cố định (Fixed-length output)', defFixed: 'Đầu vào dài ngắn bất kỳ nhưng SHA-256 luôn trả về 256 bit.', meaningFixed: 'Block lớn hay nhỏ đều có hash dài 32 byte, dễ lưu trữ và so sánh.', compare: 'So sánh nhiều đầu vào', sampleEmpty: 'Chuỗi rỗng', sampleA: 'Một ký tự: “a”', sampleCurrent: 'Đầu vào hiện tại', sampleLong: 'Đoạn văn khoảng 1.000 ký tự', custom: 'Đầu vào của bạn', customPlaceholder: 'Nhập thêm để so sánh…', bytes: 'Kích thước (byte)', output: 'Đầu ra', outputFixed: '256 bit / 64 hex',
@@ -37,6 +38,7 @@ const translations = {
     runAgain: 'Hash it again', run: 'Run', same: '✓ Matches Run 1', different: 'Differs from Run 1', maxRuns: 'The 5-run limit is reached.',
     avalanche: 'Avalanche effect (Hiệu ứng tuyết lở)', defAvalanche: 'A tiny input change makes many output bits change seemingly at random.', meaningAvalanche: 'Changing one character in a block changes its hash substantially, exposing tampering.', inputA: 'Input A', inputB: 'Input B', presetChar: 'Change 1 character', presetBit: 'Flip 1 bit', presetSpace: 'Append a space', presetCase: 'Toggle case',
     hexDiff: 'Different hex characters', bits: 'Different bits', ideal: 'The ideal value is approximately 50%.', viewBits: 'View 256-bit grid (16 × 16)', hideBits: 'Hide bit grid', randomRun: 'Run 20 random one-bit changes', randomWorking: 'Running 20 trials…', randomMean: 'Average differing bits', expected: 'Expected near 50%',
+    collision: 'Collision resistance (Kháng va chạm)', defCollision: 'Finding two different inputs that produce the same hash is extremely hard.', meaningCollision: 'Every block or transaction has its own fingerprint, so data cannot be altered without being detected.', simSpace: 'Simulated hash space', findCollision: 'Find collision', finding: 'Searching…', waitingSearch: 'No trial has run yet.', collisionFound: 'Collision found', shortHash: 'Short hash', expectedAttempts: 'Expected attempts', conclusion: 'Two different inputs share the same short hash in the simulated space.', simNote: 'This is not a real SHA-256 collision. The demo deliberately shortens the hash space to', notFound: 'No collision found within',
     preimage: 'Pre-image resistance (Kháng tiền ảnh)', defPreimage: 'Given a hash, finding an input that produces it is computationally infeasible.', meaningPreimage: 'The original data cannot be inferred from its hash; this supports PoW and wallet addresses.', oneWay: 'Cannot be reversed', notEncryption: 'SHA-256 is one-way, not encryption, so there is no “decryption”.', tryReverse: 'Try reversing the hash', stop: 'Stop', exact: 'Match the full current hash', prefix: 'Match a short prefix', prefixLength: 'Hex characters to match', attempts: 'Attempts', rate: 'Rate', elapsed: 'Elapsed', recent: 'Latest candidate', waiting: 'Not started', searching: 'Searching in a Web Worker', found: 'Candidate found', exhausted: 'Attempt limit reached; no match found.', stopped: 'Search stopped.',
     estimateFull: 'Finding a full preimage takes ~2^255 attempts on average.', estimateRate: 'At the measured rate of', estimateYears: 'the estimated time is', universe: 'The universe is about 1.4 × 10^10 years old.', estimatePrefix: 'Each additional hex character in the prefix takes about 16× more attempts.',
     fixed: 'Fixed-length output (Đầu ra cố định)', defFixed: 'Inputs of any length always produce a 256-bit SHA-256 output.', meaningFixed: 'Large or small blocks have a 32-byte hash, making storage and comparison simple.', compare: 'Compare multiple inputs', sampleEmpty: 'Empty string', sampleA: 'One character: “a”', sampleCurrent: 'Current input', sampleLong: 'Text of about 1,000 characters', custom: 'Your input', customPlaceholder: 'Enter another value to compare…', bytes: 'Size (bytes)', output: 'Output', outputFixed: '256 bit / 64 hex',
@@ -192,6 +194,99 @@ function AvalancheCard({ input, hash, t }: { input: string; hash: string; t: (ke
   </Card>
 }
 
+function CollisionCard({ t }: { t: (key: TranslationKey) => string }) {
+  const [bits, setBits] = useState(8)
+  const [result, setResult] = useState<{
+    found: boolean
+    input1?: string
+    input2?: string
+    hash1?: string
+    hash2?: string
+    shortHash?: string
+    attempts: number
+  } | null>(null)
+  const [attempts, setAttempts] = useState(0)
+  const [busy, setBusy] = useState(false)
+
+  const getShortHash = (fullHash: string, bits: number) => {
+    const hexChars = Math.ceil(bits / 4)
+    let value = BigInt(`0x${fullHash.slice(0, hexChars)}`)
+
+    const extraBits = hexChars * 4 - bits
+    value >>= BigInt(extraBits)
+
+    return value.toString(16).padStart(hexChars, '0')
+  }
+
+  const findCollision = async () => {
+    setBusy(true)
+    setResult(null)
+    setAttempts(0)
+
+    try {
+      const seen = new Map<
+        string,
+        { input: string; fullHash: string }
+      >()
+
+      const maxAttempts = Math.min(200_000, Math.ceil(Math.pow(2, bits / 2) * 8))
+
+      for (let i = 0; i < maxAttempts; i++) {
+        const input = `ChainLab-${i}`
+
+        const fullHash = await sha256(input)
+
+        const shortHash = getShortHash(fullHash, bits)
+
+        if (seen.has(shortHash)) {
+          const previous = seen.get(shortHash)!
+
+          setAttempts(i + 1)
+          setResult({
+            found: true,
+            input1: previous.input,
+            input2: input,
+            hash1: previous.fullHash,
+            hash2: fullHash,
+            shortHash,
+            attempts: i + 1
+          })
+
+          return
+        }
+
+        seen.set(shortHash, {
+          input,
+          fullHash
+        })
+
+        if (i % 100 === 0) {
+          setAttempts(i + 1)
+          await new Promise((resolve) => window.setTimeout(resolve, 0))
+        }
+      }
+
+      setAttempts(maxAttempts)
+      setResult({
+        found: false,
+        attempts: maxAttempts
+      })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return <Card title={t('collision')} icon={ShieldAlert}>
+    <CardPart label={t('definition')}><p className="text-xs leading-5 text-slate-300">{t('defCollision')}</p><p className="mt-2 rounded-md border border-slate-800 bg-slate-950/60 p-2.5 text-center font-mono text-[11px] text-slate-200">Input A ≠ Input B → Hash A = Hash B</p></CardPart>
+    <CardPart label={t('tryIt')}><div className="flex flex-wrap items-center gap-2"><label className="inline-flex min-h-9 items-center gap-2 text-xs text-slate-300">{t('simSpace')}<select value={bits} onChange={(event) => setBits(Number(event.target.value))} disabled={busy} className="min-h-9 rounded-md border border-slate-700 bg-slate-950 px-2 text-slate-100 disabled:opacity-50">{[8, 12, 16, 20].map((size) => <option value={size} key={size}>{size}-bit</option>)}</select></label><span className="text-xs text-slate-400">{t('expectedAttempts')}: <strong className="font-mono text-slate-200">≈ {Math.pow(2, bits / 2).toLocaleString()}</strong></span><button type="button" onClick={() => void findCollision()} disabled={busy} aria-label={t('findCollision')} className="ml-auto inline-flex min-h-9 items-center gap-2 rounded-lg border border-rose-300/30 bg-rose-300/[0.08] px-3 text-xs font-semibold text-rose-100 transition hover:border-rose-300/60 disabled:opacity-40">{busy ? <Square size={13} /> : <Play size={13} />}{busy ? t('finding') : t('findCollision')}</button></div>
+      <p className="mt-2 min-h-5 text-xs text-rose-200" role="status" aria-live="polite">{busy ? `${t('finding')} ${attempts.toLocaleString()} × ${t('attempts')}` : result ? (result.found ? t('collisionFound') : t('notFound')) : t('waitingSearch')}</p>
+      {result && !result.found && <p className="mt-1 text-xs text-slate-400">{result.attempts.toLocaleString()} × {t('attempts')}</p>}
+      {result?.found && <div className="mt-3 space-y-2 rounded-md border border-rose-300/20 bg-rose-300/[0.05] p-2.5"><div className="space-y-1.5"><span className="block text-xs font-semibold text-slate-300">{t('inputA')}</span><code className="block break-all font-mono text-[11px] text-slate-100">{result.input1}</code><HashGroups value={result.hash1 ?? ''} className="text-[9px] text-slate-400" /></div><div className="space-y-1.5"><span className="block text-xs font-semibold text-slate-300">{t('inputB')}</span><code className="block break-all font-mono text-[11px] text-slate-100">{result.input2}</code><HashGroups value={result.hash2 ?? ''} className="text-[9px] text-slate-400" /></div><div className="flex flex-wrap items-center justify-between gap-2 border-t border-rose-300/15 pt-2"><span className="text-xs text-slate-300">{t('shortHash')} ({bits}-bit): <strong className="font-mono text-rose-200">{result.shortHash}</strong></span><span className="text-xs text-slate-400">{t('attempts')}: <strong className="font-mono text-slate-100">{result.attempts.toLocaleString()}</strong></span></div><p className="flex items-start gap-1.5 text-xs font-medium leading-5 text-emerald-200"><Check size={13} className="mt-0.5 shrink-0" />{t('conclusion')}</p><p className="text-[11px] leading-5 text-amber-200/90">{t('simNote')} <strong className="font-mono">{bits}</strong> bit.</p></div>}
+    </CardPart>
+    <CardPart label={t('meaning')}><PropertyMeaning text={t('meaningCollision')} /></CardPart>
+  </Card>
+}
+
 function PreimageCard({ hash, t }: { hash: string; t: (key: TranslationKey) => string }) {
   const [shortMode, setShortMode] = useState(true)
   const [prefixLength, setPrefixLength] = useState(4)
@@ -321,7 +416,7 @@ export default function TabSHA256({ onNavigate }: Props) {
     <section className="sha-panel rounded-lg border border-emerald-300/20 bg-emerald-300/[0.05] px-3 py-2 text-xs font-medium leading-5 text-emerald-100" role="note"><span className="mr-2 text-emerald-300">●</span>{t('localNote')}</section>
     <details open={noticeOpen} onToggle={(event) => setNoticeOpen(event.currentTarget.open)} className="sha-panel rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2"><summary className="cursor-pointer text-xs font-semibold text-slate-200">{t('howTo')}</summary><ol className="mt-2 grid gap-1.5 text-xs leading-5 text-slate-300 sm:grid-cols-3"><li><span className="mr-1 font-mono text-emerald-300">01</span>{t('step1')}</li><li><span className="mr-1 font-mono text-emerald-300">02</span>{t('step2')}</li><li><span className="mr-1 font-mono text-emerald-300">03</span>{t('step3')}</li></ol></details>
     <HashInput input={input} setInput={setInput} hash={hash} busy={busy} language={language} t={t} onCopy={() => void copyHash()} copied={copied} />
-    <div className="grid gap-3 xl:grid-cols-2" aria-label={t('properties')}><DeterministicCard input={input} hash={hash} t={t} /><AvalancheCard input={input} hash={hash} t={t} /><PreimageCard hash={hash} t={t} /><FixedLengthCard input={input} t={t} /></div>
+    <div className="grid gap-3 xl:grid-cols-2" aria-label={t('properties')}><DeterministicCard input={input} hash={hash} t={t} /><AvalancheCard input={input} hash={hash} t={t} /><CollisionCard t={t} /><PreimageCard hash={hash} t={t} /><FixedLengthCard input={input} t={t} /></div>
     <aside className="sha-panel rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2.5 text-xs leading-5 text-slate-300">{t('byteNotice')} <span className="font-mono text-emerald-200">{byteCount.toLocaleString(language === 'VN' ? 'vi-VN' : 'en-US')} bytes UTF-8</span></aside>
     <TestVectors t={t} />
     <section className="sha-panel rounded-xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-sm font-semibold text-slate-100">{t('bridgeTitle')}</h3><div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><span className="rounded-md border border-slate-700 bg-slate-950/70 px-3 py-2 text-slate-200">{t('blockBefore')}</span><ArrowRight size={14} className="text-slate-400" /><span className="rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-emerald-100">{t('blockHash')}<br /><code className="font-mono text-xs">{hash.slice(0, 12)}…</code></span><ArrowRight size={14} className="text-slate-400" /><span className="rounded-md border border-slate-700 bg-slate-950/70 px-3 py-2 text-slate-200">{t('blockHeader')}<br /><strong className="text-xs text-sky-200">{t('previousHash')}</strong></span></div></div><button type="button" onClick={() => onNavigate('mining')} aria-label={t('next')} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-emerald-300/30 bg-emerald-300/[0.08] px-3 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/60"><ArrowRight size={15} />{t('next')}</button></div></section>
