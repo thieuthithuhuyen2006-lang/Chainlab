@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Clock3 } from 'lucide-react'
 import MerkleTree from './MerkleTree'
 import TransactionTable from './TransactionTable'
@@ -52,7 +52,7 @@ export default function TabBlockchain() {
   const [selectedField, setSelectedField] = useState('index')
   const [selectedTx, setSelectedTx] = useState<number | null>(null)
   const [baselineHashes, setBaselineHashes] = useState<string[]>([])
-  const block: Block = chain[Math.min(selectedBlock, chain.length - 1)]
+  const block: Block = useMemo(() => chain[Math.min(selectedBlock, chain.length - 1)], [chain, selectedBlock])
   const checks = validateChain(chain, block.difficulty)
   const calculatedMerkle = merkleRoot(block.transactions.map(hashTransaction))
   const calculatedHash = hashBlock({ ...block, merkleRoot: calculatedMerkle })

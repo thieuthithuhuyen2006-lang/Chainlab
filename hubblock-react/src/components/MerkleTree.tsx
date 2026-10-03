@@ -32,7 +32,6 @@ export default function MerkleTree({
   
 }: Props) {
   const [tree, setTree] = useState<{ levels: string[][]; root: string; proofs: MerkleProofNode[][] } | null>(null)
-  const [localSelected, setLocalSelected] = useState<number | null>(selectedIndex)
   const [verifyState, setVerifyState] = useState<{ running: boolean; steps: { hash: string; side: 'left' | 'right' | 'root'; label: string }[]; result: boolean | null }>({ running: false, steps: [], result: null })
   const [hoveredNode, setHoveredNode] = useState<{ level: number; index: number; hash: string } | null>(null)
   const [copiedHash, setCopiedHash] = useState<string | null>(null)
@@ -42,21 +41,25 @@ export default function MerkleTree({
   const [newTx, setNewTx] = useState({ from: '', to: '', amount: '' })
 
   const hasRealTransactions = transactions.length > 0
-  const effectiveSelected = selectedIndex ?? localSelected
+  const effectiveSelected = selectedIndex
 
   useEffect(() => {
+    let cancelled = false
     if (hasRealTransactions) {
-      buildMerkleTree(transactions).then(setTree)
+      buildMerkleTree(transactions).then((result) => {
+        if (!cancelled) setTree(result)
+      }).catch(() => {
+        if (!cancelled) setTree(null)
+      })
     } else if (txHashes.length) {
       setTree(syncMerkleTree(txHashes))
     } else {
       setTree(null)
     }
+    return () => { cancelled = true }
   }, [transactions, txHashes, hasRealTransactions])
 
-  useEffect(() => {
-    setLocalSelected(selectedIndex)
-  }, [selectedIndex])
+  
 
   const treeRoot = tree?.root ?? ''
   const leafCount = hasRealTransactions ? transactions.length : txHashes.length
@@ -92,7 +95,7 @@ export default function MerkleTree({
 
   function handleLeafClick(index: number) {
     const proof = tree?.proofs[index] ?? []
-    setLocalSelected(index)
+    
     setVerifyState({ running: false, steps: [], result: null })
     onSelect?.(index, proof)
   }
@@ -332,6 +335,7 @@ export default function MerkleTree({
     </section>
   )
 }
+
 
 
 
