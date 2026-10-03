@@ -52,17 +52,19 @@ async function createWallet(): Promise<WalletKeyPair> {
   }
 }
 
-function transactionDigest(value: string) {
-  const [from = '', remainder = ''] = value.split(' → ')
-  const [to = '', amount = ''] = remainder.split(' · ')
-  return hashTransaction({ from, to, amount })
-}
-
 function MerkleGraph({ transactions, onTransactionChange }: { transactions: string[]; onTransactionChange: (index: number, value: string) => void }) {
-  const txHashes = useMemo(() => transactions.map(transactionDigest), [transactions])
-  const baselineHashes = useMemo(() => initialTransactions.map(transactionDigest), [])
+  const parsed = useMemo(() => transactions.map((tx) => {
+    const [from = '', remainder = ''] = tx.split(' → ')
+    const [to = '', amount = ''] = remainder.split(' · ')
+    return { from, to, amount }
+  }), [transactions])
+  const baselineHashes = useMemo(() => initialTransactions.map((tx) => {
+    const [from = '', remainder = ''] = tx.split(' → ')
+    const [to = '', amount = ''] = remainder.split(' · ')
+    return hashTransaction({ from, to, amount })
+  }), [])
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  return <MerkleTree txHashes={txHashes} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={(index) => setSelectedIndex(index)} onLabelChange={onTransactionChange} />
+  return <MerkleTree transactions={parsed} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={(index) => setSelectedIndex(index)} onLabelChange={onTransactionChange} />
 }
 
 function CopyButton({ value, label }: { value: string; label: string }) {
