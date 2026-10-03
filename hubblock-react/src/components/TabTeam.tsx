@@ -1,7 +1,7 @@
 import { GraduationCap, Mail, UsersRound } from 'lucide-react'
 
 const members = [
-  { name: 'Thiều Thị Thu Huyền', role: 'Trưởng nhóm / Project Lead & UI Architecture', initials: 'TH' },
+  { name: 'Thiều Thị Thu Huyền', role: 'Project Lead & UI Architecture', initials: 'TH' },
   { name: 'Huỳnh Ngọc Minh Thảo', role: 'Frontend Developer', initials: 'MT' },
   { name: 'Nguyễn Thu Thảo', role: 'Blockchain Logic Developer', initials: 'TT' },
   { name: 'Lê Thị Kim Oanh', role: 'PoS & Smart Contract Specialist', initials: 'KO' },
