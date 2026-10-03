@@ -1,4 +1,5 @@
 import { GraduationCap, Mail, UsersRound } from 'lucide-react'
+import hubLogo from '../../public/hub-logo.png'
 
 const members = [
   { name: 'Thiều Thị Thu Huyền', role: 'Project Lead & UI Architecture', initials: 'TH' },
@@ -10,7 +11,7 @@ const members = [
 ]
 
 function HubLogo() {
-  return <span className="grid size-10 place-items-center rounded-xl border border-purple-300/30 bg-white p-1.5 shadow-lg shadow-purple-950/30"><img src="hub-logo.png" alt="HUB" className="h-full w-full object-contain" /></span>
+  return <span className="grid size-10 place-items-center rounded-xl border border-purple-300/30 bg-white p-1.5 shadow-lg shadow-purple-950/30"><img src={hubLogo} alt="HUB" className="h-full w-full object-contain" /></span>
 }
 
 export default function TabTeam() {
