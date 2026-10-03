@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GitBranch, TreePine, Copy, Check, Plus, Trash2, ShieldCheck, ShieldX, ChevronRight } from 'lucide-react'
 import { buildMerkleTree, verifyProof, type MerkleProofNode } from '../lib/merkle'
@@ -13,8 +13,6 @@ type Props = {
   baselineHashes?: string[]
   selectedIndex?: number | null
   onSelect?: (index: number, proof: MerkleProofNode[]) => void
-  onLabelChange?: (index: number, value: string) => void
-  blockIndex?: number
 }
 
 function copyValue(value: string) {
@@ -35,6 +33,7 @@ export default function MerkleTree({
   const [verifyState, setVerifyState] = useState<{ running: boolean; steps: { hash: string; side: 'left' | 'right' | 'root'; label: string }[]; result: boolean | null }>({ running: false, steps: [], result: null })
   const [hoveredNode, setHoveredNode] = useState<{ level: number; index: number; hash: string } | null>(null)
   const [copiedHash, setCopiedHash] = useState<string | null>(null)
+  const copyTimeoutRef = useRef<number | null>(null)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editForm, setEditForm] = useState({ from: '', to: '', amount: '' })
   const [showAddForm, setShowAddForm] = useState(false)
@@ -56,7 +55,13 @@ export default function MerkleTree({
     } else {
       setTree(null)
     }
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current)
+        copyTimeoutRef.current = null
+      }
+    }
   }, [transactions, txHashes, hasRealTransactions])
 
   
@@ -102,18 +107,23 @@ export default function MerkleTree({
 
   async function handleVerify() {
     if (effectiveSelected === null || !tree) return
-    const txHash = tree.levels[0][effectiveSelected]
+    const leafHash = tree.levels[0][effectiveSelected]
+    const proof = selectedProof
     setVerifyState({ running: true, steps: [], result: null })
-    const steps: { hash: string; side: 'left' | 'right' | 'root'; label: string }[] = []
-    let current = txHash
-    for (const step of tree.proofs[effectiveSelected]) {
-      const combined = step.side === 'left' ? step.hash + current : current + step.hash
-            steps.push({ hash: step.hash, side: step.side, label: step.side === 'left' ? 'Left sibling' : 'Right sibling' })
-      current = combined
+    try {
+      const steps: { hash: string; side: 'left' | 'right' | 'root'; label: string }[] = []
+      let current = leafHash
+      for (const step of proof) {
+        const combined = step.side === 'left' ? step.hash + current : current + step.hash
+        steps.push({ hash: step.hash, side: step.side, label: step.side === 'left' ? 'Left sibling' : 'Right sibling' })
+        current = combined
+      }
+      const valid = await verifyProof(leafHash, proof, tree.root)
+      steps.push({ hash: tree.root, side: 'root', label: 'Merkle root' })
+      setVerifyState({ running: false, steps, result: valid })
+    } catch {
+      setVerifyState({ running: false, steps: [], result: false })
     }
-    const valid = await verifyProof(txHash, tree.proofs[effectiveSelected], tree.root)
-    steps.push({ hash: tree.root, side: 'root', label: 'Merkle root' })
-    setVerifyState({ running: false, steps, result: valid })
   }
 
   function handleSaveEdit() {
@@ -148,7 +158,7 @@ export default function MerkleTree({
   }
 
   const formulaSegments = useMemo(() => {
-    if (!tree) return []
+    if (!tree || tree.levels.length < 2) return []
     const segments: { hash: string; label: string }[] = []
     for (let i = 0; i < tree.levels[0].length; i += 2) {
       segments.push({ hash: tree.levels[1][i / 2], label: `SHA256(H(Tx${i + 1}) + H(Tx${i + 2}))` })
@@ -231,7 +241,7 @@ export default function MerkleTree({
                   {hoveredNode?.level === levelIndex && hoveredNode?.index === nodeIndex && (
                     <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 z-20 rounded-lg border border-slate-700 bg-slate-950 p-2 shadow-xl">
                       <code className="block max-w-[320px] break-all font-mono text-[10px] leading-4 text-slate-200">{hash}</code>
-                      <button type="button" onClick={() => { copyValue(hash); setCopiedHash(hash); window.setTimeout(() => setCopiedHash(null), 1200) }} className="mt-1.5 inline-flex items-center gap-1 rounded border border-slate-700 px-1.5 text-[10px] text-slate-300 hover:text-slate-100">
+                      <button type="button" onClick={() => { copyValue(hash); setCopiedHash(hash); if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current); copyTimeoutRef.current = window.setTimeout(() => setCopiedHash(null), 1200) }} className="mt-1.5 inline-flex items-center gap-1 rounded border border-slate-700 px-1.5 text-[10px] text-slate-300 hover:text-slate-100">
                         {copiedHash === hash ? <Check size={10} /> : <Copy size={10} />}
                         {copiedHash === hash ? 'Copied' : 'Copy'}
                       </button>
