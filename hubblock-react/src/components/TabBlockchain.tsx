@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Clock3 } from 'lucide-react'
 import MerkleTree from './MerkleTree'
 import TransactionTable from './TransactionTable'
 import { hashBlock, hashTransaction, merkleRoot, validateChain, type Block } from '../lib/chain'
-import { setBlockTimestamp } from '../lib/chainStore'
+import { setBlockTimestamp, updateBlockTransactions } from '../lib/chainStore'
 import { useChain } from '../lib/useChain'
 
 type Version = 'v1' | 'v2'
@@ -51,13 +51,19 @@ export default function TabBlockchain() {
   const [version, setVersion] = useState<Version>('v2')
   const [selectedField, setSelectedField] = useState('index')
   const [selectedTx, setSelectedTx] = useState<number | null>(null)
+  const [baselineHashes, setBaselineHashes] = useState<string[]>([])
   const block: Block = chain[Math.min(selectedBlock, chain.length - 1)]
   const checks = validateChain(chain, block.difficulty)
   const calculatedMerkle = merkleRoot(block.transactions.map(hashTransaction))
   const calculatedHash = hashBlock({ ...block, merkleRoot: calculatedMerkle })
   const timestamp = currentTimestampDetails(block.timestamp)
   const v1Data = block.transactions.map(({ from, to, amount }) => `${from} → ${to}: ${amount}`).join('\n') || '(empty)'
-  const txHashes = useMemo(() => block.transactions.map(hashTransaction), [block.transactions])
+  const handleTransactionsChange = useCallback((updated: Block['transactions']) => updateBlockTransactions(block.index, updated), [block.index])
+
+  useEffect(() => {
+    setBaselineHashes(block.transactions.map(hashTransaction))
+    setSelectedTx(null)
+  }, [block.index, block.transactions])
   const formulaParts = [
     { key: 'index', value: String(block.index) },
     { key: 'timestamp', value: block.timestamp },
@@ -82,7 +88,7 @@ export default function TabBlockchain() {
 
       <section className="min-w-0 space-y-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3"><h3 className="text-sm font-semibold text-slate-100">Công thức hash của block (Block hash formula)</h3><p className="mt-1 text-xs text-slate-400">Đúng theo code hiện tại: validator được nối vào cuối. Giao dịch được tóm tắt bởi Merkle root.</p><code className="mt-2 block break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs text-sky-200">blockHash = SHA256(index ‖ timestamp ‖ previousHash ‖ merkleRoot ‖ nonce ‖ validator)</code><div className="mt-2 flex flex-wrap gap-1.5 text-xs">{formulaParts.map(({ key, value }) => <span key={key} className={`rounded border border-slate-700 px-2 py-1 font-mono ${fieldColors[key]} ${selectedField === key ? 'ring-1 ring-amber-300' : ''}`}>{key}: {value.length > 24 ? `${value.slice(0, 10)}…${value.slice(-6)}` : value}</span>)}</div><p className="mt-2 text-xs font-semibold text-slate-300">Chuỗi nối thực tế đưa vào SHA-256 (các màu tách trường, không có dấu phân cách):</p><div className="flex flex-wrap break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs" aria-label={formulaParts.map(({ value }) => value).join('')}>{formulaParts.map(({ key, value }) => <code key={key} className={`${fieldColors[key]} ${selectedField === key ? 'rounded ring-1 ring-amber-300' : ''}`}>{value}</code>)}</div><HashLine hash={calculatedHash} label="SHA-256 output" /></div>
-        <MerkleTree txHashes={txHashes} labels={block.transactions.map((transaction) => transaction.id)} selectedIndex={selectedTx} onSelect={(index) => setSelectedTx(index)} />
+        <MerkleTree transactions={block.transactions} baselineHashes={baselineHashes} selectedIndex={selectedTx} onSelect={(index) => setSelectedTx(index)} onTransactionsChange={handleTransactionsChange} blockIndex={block.index} />
       </section>
     </div>
 

@@ -48,3 +48,51 @@ test('balance validation rejects spending beyond available funds', () => {
   assert.equal(canCoverTransactions(accounts, [{ from: 'alice', to: 'bob', amount: '0.7' }]).valid, true)
   assert.equal(canCoverTransactions(accounts, [{ from: 'alice', to: 'bob', amount: '0.7' }, { from: 'alice', to: 'bob', amount: '0.7' }]).reason, 'Insufficient balance.')
 })
+
+test('buildMerkleTree computes real SHA-256 hashes and odd-leaf duplication', async () => {
+  const { buildMerkleTree, verifyProof } = await import('../src/lib/merkle.ts')
+  const txs = [
+    { id: 'tx-1', from: 'alice', to: 'bob', amount: '1', signatureStatus: 'unsigned' },
+    { id: 'tx-2', from: 'bob', to: 'carol', amount: '0.5', signatureStatus: 'unsigned' },
+    { id: 'tx-3', from: 'carol', to: 'alice', amount: '0.2', signatureStatus: 'unsigned' },
+  ]
+  const tree = await buildMerkleTree(txs)
+  assert.equal(tree.levels.length, 3)
+  assert.equal(tree.levels[0].length, 3)
+  assert.equal(tree.levels[1].length, 2)
+  assert.equal(tree.levels[2].length, 1)
+  assert.equal(tree.root.length, 64)
+  assert.ok(tree.root !== await import('../src/lib/chain.ts').then(m => m.sha256('')))
+  assert.equal(tree.proofs.length, 3)
+  assert.equal(tree.proofs[0].length, 2)
+  assert.equal(tree.proofs[0][0].side, 'right')
+  assert.equal(tree.proofs[0][1].side, 'right')
+  assert.equal(tree.proofs[2].length, 2)
+  assert.equal(tree.proofs[2][0].side, 'right')
+  assert.equal(tree.proofs[2][1].side, 'left')
+  assert.equal(await verifyProof(tree.levels[0][0], tree.proofs[0], tree.root), true)
+  assert.equal(await verifyProof(tree.levels[0][2], tree.proofs[2], tree.root), true)
+})
+
+test('verifyProof validates valid proof and rejects tampered proof', async () => {
+  const { buildMerkleTree, verifyProof } = await import('../src/lib/merkle.ts')
+  const txs = [
+    { id: 'tx-1', from: 'alice', to: 'bob', amount: '1', signatureStatus: 'unsigned' },
+    { id: 'tx-2', from: 'bob', to: 'carol', amount: '0.5', signatureStatus: 'unsigned' },
+  ]
+  const tree = await buildMerkleTree(txs)
+  const txHash = tree.levels[0][0]
+  assert.equal(await verifyProof(txHash, tree.proofs[0], tree.root), true)
+  assert.equal(await verifyProof(txHash, [], tree.root), false)
+  assert.equal(await verifyProof('0'.repeat(64), tree.proofs[0], tree.root), false)
+})
+
+test('buildMerkleTree handles single transaction', async () => {
+  const { buildMerkleTree } = await import('../src/lib/merkle.ts')
+  const txs = [{ id: 'tx-1', from: 'alice', to: 'bob', amount: '1', signatureStatus: 'unsigned' }]
+  const tree = await buildMerkleTree(txs)
+  assert.equal(tree.levels.length, 1)
+  assert.equal(tree.root, tree.levels[0][0])
+  assert.equal(tree.proofs.length, 1)
+  assert.equal(tree.proofs[0].length, 0)
+})
