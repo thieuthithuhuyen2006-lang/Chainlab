@@ -23,10 +23,6 @@ export function replaceChain(next: Block[]) {
   commit(next)
 }
 
-export function updateBlockTransactions(blockIndex: number, transactions: Transaction[]) {
-  commit(chain.map((block) => block.index !== blockIndex ? block : { ...block, transactions }))
-}
-
 export function updateTransaction(blockIndex: number, transactionId: string, update: Partial<Pick<Transaction, 'from' | 'to' | 'amount'>>) {
   commit(chain.map((block) => block.index !== blockIndex ? block : {
     ...block,

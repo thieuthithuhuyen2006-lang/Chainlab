@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { AlertTriangle, ArrowRight, Check, Copy, Eye, EyeOff, Fingerprint, KeyRound, LockKeyhole, RefreshCw, ShieldCheck, ShieldX, WalletCards } from 'lucide-react'
 import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
-import { ErrorBoundary } from './MerkleTreeErrorBoundary'
 import { hashTransaction } from '../lib/chain'
 
 type WalletKeyPair = {
@@ -53,19 +52,17 @@ async function createWallet(): Promise<WalletKeyPair> {
   }
 }
 
-function MerkleGraph({ transactions }: { transactions: string[] }) {
-  const parsed = useMemo(() => transactions.map((tx, i) => {
-    const [from = '', remainder = ''] = tx.split(' → ')
-    const [to = '', amount = ''] = remainder.split(' · ')
-    return { id: `tx-${i}`, from, to, amount, signatureStatus: 'unsigned' as const }
-  }), [transactions])
-  const baselineHashes = useMemo(() => initialTransactions.map((tx) => {
-    const [from = '', remainder = ''] = tx.split(' → ')
-    const [to = '', amount = ''] = remainder.split(' · ')
-    return hashTransaction({ from, to, amount })
-  }), [])
+function transactionDigest(value: string) {
+  const [from = '', remainder = ''] = value.split(' → ')
+  const [to = '', amount = ''] = remainder.split(' · ')
+  return hashTransaction({ from, to, amount })
+}
+
+function MerkleGraph({ transactions, onTransactionChange }: { transactions: string[]; onTransactionChange: (index: number, value: string) => void }) {
+  const txHashes = useMemo(() => transactions.map(transactionDigest), [transactions])
+  const baselineHashes = useMemo(() => initialTransactions.map(transactionDigest), [])
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  return <ErrorBoundary><MerkleTree transactions={parsed} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={(index) => setSelectedIndex(index)} /></ErrorBoundary>
+  return <MerkleTree txHashes={txHashes} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={(index) => setSelectedIndex(index)} onLabelChange={onTransactionChange} />
 }
 
 function CopyButton({ value, label }: { value: string; label: string }) {
@@ -121,7 +118,7 @@ export default function TabSignatureMerkle() {
   const [verifySignature, setVerifySignature] = useState('')
   const [verification, setVerification] = useState<boolean | null>(null)
   const [error, setError] = useState('')
-  const [transactions] = useState(initialTransactions)
+  const [transactions, setTransactions] = useState(initialTransactions)
   const payload = hashTransaction({ from: sender, to: receiver, amount })
 
   async function handleCreateWallet() {
@@ -189,6 +186,10 @@ export default function TabSignatureMerkle() {
     setError('')
   }
 
+  function updateTransaction(index: number, value: string) {
+    setTransactions((current) => current.map((transaction, transactionIndex) => transactionIndex === index ? value : transaction))
+  }
+
   return (
     <div className="space-y-5">
       <div className="grid gap-4 xl:grid-cols-[0.88fr_1.12fr]">
@@ -230,7 +231,7 @@ export default function TabSignatureMerkle() {
         {error && <p role="alert" className="mt-3 flex items-center gap-2 text-[10px] text-rose-300"><AlertTriangle size={13} />{error}</p>}
       </section>
 
-      <MerkleGraph transactions={transactions} />
+      <MerkleGraph transactions={transactions} onTransactionChange={updateTransaction} />
       <p className="flex items-start gap-2 px-1 text-[9px] leading-5 text-slate-600"><ArrowRight size={12} className="mt-0.5 shrink-0 text-rose-300" />Sửa Tx₁–Tx₄ để tính lại leaf hash, parent hash và Merkle Root theo thời gian thực. Nhánh bị ảnh hưởng sẽ chuyển đỏ.</p>
     </div>
   )
