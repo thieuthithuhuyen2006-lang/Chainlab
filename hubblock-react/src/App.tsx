@@ -20,7 +20,7 @@ const modules: Record<ModuleId, ModuleInfo> = {
   rsa: { eyebrow: '03 / PUBLIC-KEY CRYPTOGRAPHY', title: 'RSA Crypto', description: 'Mã hóa RSA-OAEP, chữ ký RSA-PSS, ECDSA wallet và Merkle proofs.', icon: FileKey2 },
   flashcards: { eyebrow: '04 / LEARNING DECK', title: 'Blockchain Flashcards', description: 'Ôn tập blockchain, cryptography, consensus và smart contracts.', icon: Fingerprint },
   project: { eyebrow: '05 / PROJECT OVERVIEW', title: 'HUB Blockchain Lab', description: 'Mục tiêu học tập, kiến trúc mô phỏng và phạm vi sandbox.', icon: Network },
-  team: { eyebrow: '06 / PROJECT TEAM', title: 'Khoa Khoa học dữ liệu · HUB', description: 'Giảng viên hướng dẫn và nhóm thực hiện dự án.', icon: UsersRound },
+  team: { eyebrow: '06 / PROJECT TEAM', title: 'Khoa Khoa học dữ liệu trong kinh doanh · HUB', description: 'Giảng viên hướng dẫn và nhóm thực hiện dự án.', icon: UsersRound },
 }
 
 function ProjectInfoModal({ onClose }: { onClose: () => void }) {
