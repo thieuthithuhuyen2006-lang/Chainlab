@@ -38,7 +38,7 @@ export default function Navbar({ activeTab, onTabChange, onProjectInfo }: Navbar
       <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-x-5 gap-y-3">
         <a className="order-1 flex shrink-0 items-center gap-3" href="#top" aria-label="CHAINLAB trang chủ" onClick={() => onTabChange('home')}>
           <span className="grid size-10 place-items-center rounded-xl border border-purple-300/30 bg-white p-1.5 shadow-lg shadow-purple-950/30">
-            <img src="/hub-logo.svg" alt="HUB" onError={() => setLogoUnavailable(true)} className={`h-full w-full object-contain ${logoUnavailable ? 'hidden' : ''}`} />
+            <img src="/hub-logo.png" alt="HUB" onError={() => setLogoUnavailable(true)} className={`h-full w-full object-contain ${logoUnavailable ? 'hidden' : ''}`} />
             {logoUnavailable && <span className="font-mono text-xs font-bold text-purple-700">HUB</span>}
           </span>
           <span className="leading-tight">

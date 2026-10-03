@@ -10,7 +10,7 @@ const members = [
 ]
 
 function HubLogo() {
-  return <span className="grid size-14 place-items-center rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-200"><img src="/hub-logo.svg" alt="HUB" className="h-full w-full object-contain p-1" /></span>
+  return <span className="grid size-14 place-items-center rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-200"><img src="/hub-logo.png" alt="HUB" className="h-full w-full object-contain p-1" /></span>
 }
 
 export default function TabTeam() {
