@@ -1,0 +1,107 @@
+[
+  {
+    "id": 102,
+    "category": "Merkle & Mining",
+    "question": "Verkle tree thay thế Merkle-Patricia Trie trong Ethereum (Verkle trie) có lợi ích gì?",
+    "answer": "Proof size nhỏ hơn nhiều (độ rộng tree lớn, chiều cao thấp). Vector commitment (KZG) cho phép proof gọn. Tăng hiệu quả stateless client, giảm bandwidth cho sync/verify.",
+    "level": "advanced"
+  },
+  {
+    "id": 103,
+    "category": "Merkle & Mining",
+    "question": "Stateless client (stateless validation) trong Ethereum đạt được như thế nào?",
+    "answer": "Client không lưu state trie, chỉ nhận witness (Verkle proof) cùng block. Verifier rebuild state root từ witness. Giảm hardware requirement cho full node, caminho cho light client an toàn.",
+    "level": "advanced"
+  },
+  {
+    "id": 104,
+    "category": "Merkle & Mining",
+    "question": "Proposer-Builder Separation (PBS) trong Ethereum tách quyền lực ra sao?",
+    "answer": "Builder xây block (sắp xếp tx, MEV), proposer chọn block bid cao nhất. Proposer không kiểm soát nội dung block, giảm centralization pressure từ MEV. MEV-Boost là triển khai out-of-protocol hiện tại.",
+    "level": "advanced"
+  },
+  {
+    "id": 105,
+    "category": "Merkle & Mining",
+    "question": "Danksharding (EIP-4844 proto-danksharding) mở rộng data availability như thế nào?",
+    "answer": "Blob transaction mang ~128KB data (blob) riêng biệt với execution. KZG commitment cho blob. Rollup L2 dùng blob làm DA layer rẻ hơn calldata. Full danksharding: 64 blob/block, data availability sampling.",
+    "level": "advanced"
+  },
+  {
+    "id": 106,
+    "category": "Merkle & Mining",
+    "question": "Bitcoin Taproot (BIP-341) cải thiện privacy và efficiency ra sao?",
+    "answer": "Schnorr signature + MAST (Merkelized Abstract Syntax Tree). Single pubkey cho single-sig và complex script (multisig, timelock). Chỉ reveal script path thực thi. Key path spend indistinguishable từ single-sig.",
+    "level": "advanced"
+  },
+  {
+    "id": 107,
+    "category": "Merkle & Mining",
+    "question": "Lightning Network (Bitcoin L2) thực hiện payment off-chain như thế nào?",
+    "answer": "Payment channel: 2-of-2 multisig funding tx. Off-chain commitment tx cập nhật balance. HTLC (Hashed Timelock Contract) route payment qua nhiều channel. Chỉ on-chain khi open/close/dispute.",
+    "level": "intermediate"
+  },
+  {
+    "id": 108,
+    "category": "Ethereum & DApp",
+    "question": "EIP-4844 blob gas market hoạt động ra sao?",
+    "answer": "Blob gas tách biệt execution gas. Base fee blob điều chỉnh riêng (target 3 blob/block, max 6). Blob data prune sau ~18 ngày (beacon node không lưu vĩnh viễn). Rollup batch tx vào blob, user fee rẻ hơn L1.",
+    "level": "advanced"
+  },
+  {
+    "id": 109,
+    "category": "Ethereum & DApp",
+    "question": "Layer 2 rollup: Optimistic vs ZK-Rollup khác nhau ở đâu?",
+    "answer": "Optimistic: giả định tx hợp lệ, challenge period (7 ngày) cho fraud proof. ZK: validity proof (SNARK/STARK) on-chain, finality nhanh, không challenge. ZK phức tạp hơn, prover cost cao.",
+    "level": "intermediate"
+  },
+  {
+    "id": 110,
+    "category": "Ethereum & DApp",
+    "question": "Account Abstraction (ERC-4337) EntryPoint contract làm gì?",
+    "answer": "Singleton contract verify UserOperation: check signature (validateUserOp), pay gas (prefund/paymaster), execute call. Bundler gom UserOperation, gửi EntryPoint.handleOps. Không thay đổi consensus layer.",
+    "level": "advanced"
+  },
+  {
+    "id": 111,
+    "category": "Tài sản số",
+    "question": "RWA (Real World Asset) tokenization quy trình pháp lý - kỹ thuật như thế nào?",
+    "answer": "SPV/Trust nắm giữ tài sản thực (bond, real estate, carbon credit). Token đại diện beneficial interest. KYC/AML on-ramp. Transfer restriction (whitelist, ERC-3643 T-REX). Oracle cập nhật NAV/price.",
+    "level": "advanced"
+  },
+  {
+    "id": 112,
+    "category": "Tài sản số",
+    "question": "ERC-3643 (T-REX) standard cho security token có gì đặc biệt?",
+    "answer": "ONCHAINID: identity smart contract per user. Compliance module kiểm tra eligibility (KYC, jurisdiction, accreditation) trước transfer. Issuer có thể force transfer, freeze, recover. Tuân thủ quy định chứng khoán.",
+    "level": "advanced"
+  },
+  {
+    "id": 113,
+    "category": "Tài sản số",
+    "question": "Carbon credit tokenization (Toucan, KlimaDAO) cơ chế hoạt động ra sao?",
+    "answer": "Bridge carbon credit từ registry (Verra, Gold Standard) trên chain thành token (BCT, NCT). Toucan: tokenize batch. KlimaDAO: treasury backed by carbon token, bonding/staking. Retirement on-chain transparent.",
+    "level": "intermediate"
+  },
+  {
+    "id": 114,
+    "category": "Bảo mật & Tấn công",
+    "question": "Governance attack (flash loan + voting) thực hiện như thế nào?",
+    "answer": "Vay flash loan governance token, deposit voting power, propose malicious proposal (drain treasury), vote yes, execute, trả flash loan. Phòng: timelock, voting delay, delegation lockup, snapshot voting off-chain.",
+    "level": "advanced"
+  },
+  {
+    "id": 115,
+    "category": "Bảo mật & Tấn công",
+    "question": "Dust attack trên UTXO model (Bitcoin) nhằm mục đích gì?",
+    "answer": "Gửi lượng BTC rất nhỏ (dust) đến nhiều địa chỉ. Khi victim spend dust, attacker link các địa chỉ lại, de-anonymize cluster. Wallet hiện đại auto-ignore dust UTXO hoặc coin control.",
+    "level": "intermediate"
+  },
+  {
+    "id": 116,
+    "category": "Bảo mật & Tấn công",
+    "question": "RPC endpoint security: JSON-RPC methods nguy hiểm nào cần restrict?",
+    "answer": "eth_sendRawTransaction, eth_sign, eth_signTransaction, personal_*, admin_*, debug_*, miner_*. Public RPC không nên expose. Dùng authenticated gateway, rate limit, method allowlist.",
+    "level": "intermediate"
+  }
+]

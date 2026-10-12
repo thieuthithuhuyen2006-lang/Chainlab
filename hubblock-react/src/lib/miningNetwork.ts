@@ -27,7 +27,12 @@ export function selectHeaviestChain(chains: Block[][]): Block[] {
   }, [] as Block[])
 }
 
-export function canCoverTransactions(accounts: BalanceAccount[], transactions: Pick<Transaction, 'from' | 'to' | 'amount'>[]): { valid: boolean; reason: string } {
+export function canCoverTransactions(accounts: BalanceAccount[], transactions: Pick<Transaction, 'from' | 'to' | 'amount'>[], locale: 'vn' | 'en' = 'en'): { valid: boolean; reason: string } {
+  const invalidAmountFormat = locale === 'vn' ? 'Định dạng số tiền không hợp lệ.' : 'Invalid amount format.'
+  const amountNotPositive = locale === 'vn' ? 'Amount phải lớn hơn 0.' : 'Amount must be greater than zero.'
+  const sameWallet = locale === 'vn' ? 'Ví gửi và ví nhận phải khác nhau.' : 'Sender and recipient must be different.'
+  const unknownAddress = locale === 'vn' ? 'Địa chỉ ví không tồn tại.' : 'Unknown wallet address.'
+  const insufficientBalance = locale === 'vn' ? 'Số dư không đủ.' : 'Insufficient balance.'
   const balances = new Map<string, number>()
   for (const account of accounts) {
     balances.set(account.address.toLowerCase(), Math.round(account.balance * DECIMAL_BASE))
@@ -39,13 +44,13 @@ export function canCoverTransactions(accounts: BalanceAccount[], transactions: P
     try {
       amountUnits = parseUnits(transaction.amount)
     } catch {
-      return { valid: false, reason: 'Invalid amount format.' }
+      return { valid: false, reason: invalidAmountFormat }
     }
-    if (amountUnits <= 0) return { valid: false, reason: 'Amount must be greater than zero.' }
-    if (sender === recipient) return { valid: false, reason: 'Sender and recipient must be different.' }
+    if (amountUnits <= 0) return { valid: false, reason: amountNotPositive }
+    if (sender === recipient) return { valid: false, reason: sameWallet }
     const senderBalance = balances.get(sender)
-    if (senderBalance === undefined || !balances.has(recipient)) return { valid: false, reason: 'Unknown wallet address.' }
-    if (senderBalance < amountUnits) return { valid: false, reason: 'Insufficient balance.' }
+    if (senderBalance === undefined || !balances.has(recipient)) return { valid: false, reason: unknownAddress }
+    if (senderBalance < amountUnits) return { valid: false, reason: insufficientBalance }
     balances.set(sender, senderBalance - amountUnits)
     balances.set(recipient, (balances.get(recipient) ?? 0) + amountUnits)
   }

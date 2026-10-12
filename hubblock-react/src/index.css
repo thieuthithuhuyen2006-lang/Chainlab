@@ -57,3 +57,12 @@ button { cursor: pointer; }
 #top[data-active-module='mining'] main > section:nth-of-type(2) { display: none; }
 #top[data-active-module='mining'] main > section:nth-of-type(3) > div:first-child { display: none; }
 .mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(12px, 1em); }
+
+/* Readability pass: raise sub-11px text so nothing is straining to read */
+.text-\[8px\] { font-size: 0.6875rem; line-height: 1rem; }
+.text-\[9px\] { font-size: 0.75rem; line-height: 1.125rem; }
+.text-\[10px\] { font-size: 0.8125rem; line-height: 1.25rem; }
+.text-xs { font-size: 0.8125rem; line-height: 1.25rem; }
+.text-sm { font-size: 0.9375rem; line-height: 1.5rem; }
+.leading-4 { line-height: 1.25rem; }
+.leading-5 { line-height: 1.375rem; }

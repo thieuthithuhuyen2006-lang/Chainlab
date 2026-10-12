@@ -99,7 +99,27 @@ export function hashBlock(block: Pick<Block, 'index' | 'timestamp' | 'previousHa
   return sha256(blockHashPreimage(block))
 }
 
-export function validateChain(chain: Block[], difficulty = chain[0]?.difficulty ?? 3): ChainChecks[] {
+const validationMessages = {
+  vn: {
+    hash: 'Hash tính lại không khớp hash đã lưu.',
+    merkle: 'Merkle root không khớp danh sách giao dịch.',
+    previous: 'Previous hash không khớp block trước.',
+    pow: (difficulty: number) => `Nonce/hash chưa đạt difficulty ${difficulty}.`,
+    timestampOlder: 'Timestamp không được nhỏ hơn block trước.',
+    timestampFuture: 'Timestamp không được quá 2 giờ trong tương lai.',
+  },
+  en: {
+    hash: 'Recomputed hash does not match the stored hash.',
+    merkle: 'Merkle root does not match the transaction list.',
+    previous: 'Previous hash does not match the previous block.',
+    pow: (difficulty: number) => `Nonce/hash does not meet difficulty ${difficulty}.`,
+    timestampOlder: 'Timestamp must not be earlier than the previous block.',
+    timestampFuture: 'Timestamp must not be more than 2 hours in the future.',
+  },
+}
+
+export function validateChain(chain: Block[], difficulty = chain[0]?.difficulty ?? 3, locale: 'vn' | 'en' = 'vn'): ChainChecks[] {
+  const m = validationMessages[locale]
   const calculatedHashes = chain.map((block) => hashBlock({ ...block, merkleRoot: merkleRoot(block.transactions.map(hashTransaction)) }))
   return chain.map((block, index) => {
     const hash = block.hash === calculatedHashes[index]
@@ -117,18 +137,18 @@ export function validateChain(chain: Block[], difficulty = chain[0]?.difficulty 
       const twoHoursMs = 2 * 60 * 60 * 1000
       if (currTimestamp < prevTimestamp) {
         timestampValid = false
-        timestampReason = 'Timestamp không được nhỏ hơn block trước.'
+        timestampReason = m.timestampOlder
       } else if (currTimestamp > now + twoHoursMs) {
         timestampValid = false
-        timestampReason = 'Timestamp không được quá 2 giờ trong tương lai.'
+        timestampReason = m.timestampFuture
       }
     }
     
     const reasons = [
-      !hash && 'Hash tính lại không khớp hash đã lưu.',
-      !merkle && 'Merkle root không khớp danh sách giao dịch.',
-      !previous && 'Previous hash không khớp block trước.',
-      !proofOfWork && `Nonce/hash chưa đạt difficulty ${difficulty}.`,
+      !hash && m.hash,
+      !merkle && m.merkle,
+      !previous && m.previous,
+      !proofOfWork && m.pow(difficulty),
       !timestampValid && timestampReason,
     ].filter((reason): reason is string => Boolean(reason))
     return { hash, merkle, previous, proofOfWork, reasons, valid: reasons.length === 0 }

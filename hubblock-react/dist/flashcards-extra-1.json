@@ -1,0 +1,107 @@
+[
+  {
+    "id": 27,
+    "category": "Mật mã học",
+    "question": "Collision resistance trong hàm băm bảo vệ điều gì?",
+    "answer": "Rất khó tìm hai đầu vào khác nhau cho ra cùng một digest. SHA-256 thiết kế để collision resistance ở mức 128-bit security.",
+    "level": "basic"
+  },
+  {
+    "id": 28,
+    "category": "Mật mã học",
+    "question": "HMAC khác hash thông thường ở đâu?",
+    "answer": "HMAC kết hợp khóa bí mật với hàm băm (như SHA-256) để tạo mã xác thực thông điệp, chống giả mạo và đảm bảo tính toàn vẹn.",
+    "level": "basic"
+  },
+  {
+    "id": 29,
+    "category": "Mật mã học",
+    "question": "PBKDF2, bcrypt, scrypt, Argon2 dùng cho mục đích gì?",
+    "answer": "Đây là các hàm dẫn xuất khóa (KDF) thiết kế chậm, tốn tài nguyên để chống brute-force mật khẩu. Argon2 là tiêu chuẩn hiện đại nhất.",
+    "level": "intermediate"
+  },
+  {
+    "id": 30,
+    "category": "Mật mã học",
+    "question": "ECDSA và EdDSA khác nhau như thế nào?",
+    "answer": "ECDSA cần random nonce cho mỗi chữ ký (rủi ro nếu nonce lặp). EdDSA (Ed25519) xác định nonce từ khóa và thông điệp, loại bỏ rủi ro random và nhanh hơn.",
+    "level": "intermediate"
+  },
+  {
+    "id": 31,
+    "category": "Mật mã học",
+    "question": "BLS signature cho phép aggregate chữ ký như thế nào?",
+    "answer": "BLS dùng cặp bilinear trên đường cong elliptic để gộp nhiều chữ ký thành một chữ ký đơn, giảm kích thước và thời gian xác minh trong consensus PoS.",
+    "level": "advanced"
+  },
+  {
+    "id": 32,
+    "category": "Cấu trúc Block",
+    "question": "Block header Bitcoin chứa những trường nào?",
+    "answer": "Version, previous block hash, merkle root, timestamp, difficulty target (bits), nonce. Tổng 80 byte dùng cho Proof of Work.",
+    "level": "basic"
+  },
+  {
+    "id": 33,
+    "category": "Cấu trúc Block",
+    "question": "Merkle tree giúp SPV client xác minh transaction như thế nào?",
+    "answer": "Client chỉ cần block header và Merkle proof (đường từ leaf đến root) để xác minh transaction có trong block mà không tải toàn bộ block.",
+    "level": "intermediate"
+  },
+  {
+    "id": 34,
+    "category": "Cấu trúc Block",
+    "question": "Uncle block (ommer) trong Ethereum là gì?",
+    "answer": "Block hợp lệ nhưng không nhập vào chain chính do truyền 播 chậm. Ethereum thưởng một phần cho uncle để khuyến khích mạng lưới an toàn hơn.",
+    "level": "intermediate"
+  },
+  {
+    "id": 35,
+    "category": "Cấu trúc Block",
+    "question": "State root, transaction root, receipt root trong header Ethereum khác nhau ra sao?",
+    "answer": "State root: hash cây trạng thái toàn bộ accounts/storage. Transaction root: hash cây các transaction trong block. Receipt root: hash cây kết quả thực thi (logs, status).",
+    "level": "advanced"
+  },
+  {
+    "id": 36,
+    "category": "Ví & Chữ ký số",
+    "question": "Seed phrase (mnemonic) BIP-39 tạo ra ví như thế nào?",
+    "answer": "Seed phrase 12-24 từ chuyển thành seed 512-bit qua PBKDF2. Seed này là gốc để dẫn xuất master key và toàn bộ cặp khóa con theo BIP-32/BIP-44.",
+    "level": "basic"
+  },
+  {
+    "id": 37,
+    "category": "Ví & Chữ ký số",
+    "question": "HD wallet (BIP-32) dẫn xuất khóa con từ khóa cha ra sao?",
+    "answer": "Dùng HMAC-SHA512 với chain code và index. Hardened derivation (index ≥ 2^31) chỉ dùng private key cha, bảo vệ ngược lại nếu khóa con bị lộ.",
+    "level": "intermediate"
+  },
+  {
+    "id": 38,
+    "category": "Ví & Chữ ký số",
+    "question": "Địa chỉ Ethereum tạo từ public key như thế nào?",
+    "answer": "Lấy 20 byte cuối của Keccak-256(public key uncompressed). EIP-55 thêm checksum bằng cách viết hoa ký tự tùy thuộc hash của địa chỉ lowercase.",
+    "level": "basic"
+  },
+  {
+    "id": 39,
+    "category": "Ví & Chữ ký số",
+    "question": "EIP-155 chain ID ngăn chặn replay attack thế nào?",
+    "answer": "Chain ID được nhập vào v của chữ ký (v = chain_id * 2 + 35/36). Chữ ký trên chain này không hợp lệ trên chain khác do v khác nhau.",
+    "level": "intermediate"
+  },
+  {
+    "id": 40,
+    "category": "Ví & Chữ ký số",
+    "question": "EIP-712 structured data signing cải thiện UX ra sao?",
+    "answer": "Cho phép ký dữ liệu có cấu trúc (typed data) thay vì raw bytes. Wallet hiển thị thông tin dễ đọc cho người dùng, giảm rủi ro blind signing.",
+    "level": "advanced"
+  },
+  {
+    "id": 41,
+    "category": "Ví & Chữ ký số",
+    "question": "Multisig (multi-signature) ví hoạt động như thế nào?",
+    "answer": "Yêu cầu M chữ ký trong N khóa được ủy quyền (M-of-N). Thường triển khai qua smart contract (Gnosis Safe) hoặc script Bitcoin (P2SH/P2WSH).",
+    "level": "intermediate"
+  }
+]

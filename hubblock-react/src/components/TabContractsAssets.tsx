@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Blocks, Check, Coins, FileCode2, Flame, Gem, Plus, ShieldCheck, WalletCards } from 'lucide-react'
+import { useBi } from '../lib/useLanguage'
 import RealityCheck from './RealityCheck'
 import LearningGoals from './LearningGoals'
 
@@ -35,6 +36,7 @@ const codeSamples: Record<ContractAction, string> = {
 const actionLabels: Record<ContractAction, string> = { transfer: 'transfer()', mint: 'mint()', burn: 'burn()' }
 
 export default function TabContractsAssets() {
+  const b = useBi()
   const [accounts, setAccounts] = useState(initialAccounts)
   const [totalSupply, setTotalSupply] = useState(initialAccounts.reduce((sum, account) => sum + account.balance, 0))
   const [action, setAction] = useState<ContractAction>('transfer')
@@ -65,46 +67,46 @@ export default function TabContractsAssets() {
     setContractError('')
     setContractMessage('')
     if (!Number.isSafeInteger(units) || units <= 0) {
-      setContractError('Amount phải là số nguyên dương trong sandbox này.')
+      setContractError(b('Amount phải là số nguyên dương trong sandbox này.', 'Amount must be a positive whole number in this sandbox.'))
       return
     }
 
     if (action === 'transfer') {
       if (!selectedFrom || !selectedTo || fromId === toId) {
-        setContractError('Chọn hai ví khác nhau để transfer.')
+        setContractError(b('Chọn hai ví khác nhau để transfer.', 'Select two different wallets to transfer.'))
         return
       }
       if (selectedFrom.balance < units) {
-        setContractError(`Insufficient balance · ${selectedFrom.name} hiện có ${selectedFrom.balance} LAB.`)
+        setContractError(b(`Số dư không đủ · ${selectedFrom.name} hiện có ${selectedFrom.balance} LAB.`, `Insufficient balance · ${selectedFrom.name} has ${selectedFrom.balance} LAB.`))
         return
       }
       setAccounts((current) => current.map((account) => account.id === fromId
         ? { ...account, balance: account.balance - units }
         : account.id === toId ? { ...account, balance: account.balance + units } : account))
-      setContractMessage(`transfer() thành công · ${units} LAB từ ${selectedFrom.name} đến ${selectedTo.name}.`)
+      setContractMessage(b(`transfer() thành công · ${units} LAB từ ${selectedFrom.name} đến ${selectedTo.name}.`, `transfer() succeeded · ${units} LAB from ${selectedFrom.name} to ${selectedTo.name}.`))
       recordEvent(`Transfer ${units} LAB · ${selectedFrom.name} → ${selectedTo.name}.`)
       return
     }
 
     if (action === 'mint') {
       if (!selectedTo) {
-        setContractError('Chọn ví nhận token mint.')
+        setContractError(b('Chọn ví nhận token mint.', 'Select the wallet to receive the minted tokens.'))
         return
       }
       setAccounts((current) => current.map((account) => account.id === toId ? { ...account, balance: account.balance + units } : account))
       setTotalSupply((current) => current + units)
-      setContractMessage(`mint() thành công · ${units} LAB được phát hành cho ${selectedTo.name}.`)
+      setContractMessage(b(`mint() thành công · ${units} LAB được phát hành cho ${selectedTo.name}.`, `mint() succeeded · ${units} LAB issued to ${selectedTo.name}.`))
       recordEvent(`Mint ${units} LAB to ${selectedTo.name} · total supply increased.`)
       return
     }
 
     if (!selectedFrom || selectedFrom.balance < units) {
-      setContractError(`Insufficient balance · ${selectedFrom?.name ?? 'Ví gửi'} không đủ token để burn.`)
+      setContractError(b(`Số dư không đủ · ${selectedFrom?.name ?? 'Ví gửi'} không đủ token để burn.`, `Insufficient balance · ${selectedFrom?.name ?? 'Sender wallet'} does not have enough tokens to burn.`))
       return
     }
     setAccounts((current) => current.map((account) => account.id === fromId ? { ...account, balance: account.balance - units } : account))
     setTotalSupply((current) => current - units)
-    setContractMessage(`burn() thành công · ${units} LAB đã bị hủy khỏi ${selectedFrom.name}.`)
+    setContractMessage(b(`burn() thành công · ${units} LAB đã bị hủy khỏi ${selectedFrom.name}.`, `burn() succeeded · ${units} LAB burned from ${selectedFrom.name}.`))
     recordEvent(`Burn ${units} LAB from ${selectedFrom.name} · total supply decreased.`)
   }
 

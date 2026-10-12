@@ -30,3 +30,12 @@ export function useTranslation<T extends Record<string, string>>(translations: {
   const language = useLanguage()
   return (key) => translations[language][key]
 }
+
+export function useBi(): (vi: string, en: string) => string {
+  const language = useLanguage()
+  return (vi, en) => (language === 'VN' ? vi : en)
+}
+
+export function currentLocale(): 'vn' | 'en' {
+  return getInitialLanguage() === 'EN' ? 'en' : 'vn'
+}

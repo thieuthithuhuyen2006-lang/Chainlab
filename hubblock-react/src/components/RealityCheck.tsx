@@ -21,7 +21,7 @@ const realityChecks = {
       title: 'Mining (PoW)',
       icon: Cpu,
       items: [
-        'Không có <strong>phí giao dịch</strong> (transaction fees) — miner chỉ nhận block reward mô phỏng.',
+        'Không có <strong>phí giao dịch</strong> — miner chỉ nhận block reward mô phỏng.',
         'Không có <strong>halving</strong> — reward cố định 0.01 ETH mô phỏng mỗi block.',
         'Chỉ <strong>một trình duyệt</strong> (không P2P thật) — hashPower là mô phỏng cục bộ, không phải hashrate mạng.',
         'Nonce không gian tìm kiếm nhỏ — difficulty 3–5 hex 0 (demo); Bitcoin thực tế ~19–20 byte 0 đầu.',
@@ -33,9 +33,9 @@ const realityChecks = {
       icon: Network,
       items: [
         'Validator thật cần <strong>tối thiểu 32 ETH</strong> để kích hoạt; demo dùng số nhỏ (8–32 ETH) cho dễ quan sát.',
-        'Mỗi slot có <strong>ủy ban chứng thực lớn</strong> (committee) ngẫu nhiên; demo dùng tất cả validator hoạt động.',
+        'Mỗi slot có <strong>ủy ban chứng thực lớn</strong> ngẫu nhiên; demo dùng tất cả validator hoạt động.',
         'Finality thật cần <strong>~2 epoch (~12,8 phút)</strong> theo Casper FFG; demo "included" = block đã attest ≥2/3 stake và thêm vào chuỗi cục bộ.',
-        'RANDAO và slashing được <strong>đơn giản hóa</strong>: thực tế có phạt tương quan (proportional), buộc rời mạng, inactivity leak.',
+        'RANDAO và slashing được <strong>đơn giản hóa</strong>: thực tế có phạt tương quan, buộc rời mạng, inactivity leak.',
       ],
     },
     {

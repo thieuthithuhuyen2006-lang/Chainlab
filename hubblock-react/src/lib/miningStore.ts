@@ -67,24 +67,24 @@ export function configureMiningWallets(count: number, configuration: { id: strin
   void ensureMiningWalletKeys()
 }
 
-export async function createSignedTransaction(fromId: string, toAddress: string, amountInput: string): Promise<{ transaction?: SignedMiningTransaction; error?: string }> {
+export async function createSignedTransaction(fromId: string, toAddress: string, amountInput: string, locale: 'vn' | 'en' = 'vn'): Promise<{ transaction?: SignedMiningTransaction; error?: string }> {
   const from = snapshot.wallets.find((wallet) => wallet.id === fromId)
   const to = snapshot.wallets.find((wallet) => wallet.address.toLowerCase() === toAddress.toLowerCase())
   let amountUnits: number
   try {
     amountUnits = parseUnits(amountInput)
   } catch {
-    return { error: 'Số tiền không hợp lệ (tối đa 8 chữ số thập phân).' }
+    return { error: locale === 'vn' ? 'Số tiền không hợp lệ (tối đa 8 chữ số thập phân).' : 'Invalid amount (at most 8 decimal places).' }
   }
-  if (!from || !to) return { error: 'Chọn ví gửi và ví nhận trong danh sách.' }
-  if (from.address === to.address) return { error: 'Ví gửi và ví nhận phải khác nhau.' }
-  if (amountUnits <= 0) return { error: 'Amount phải lớn hơn 0.' }
-  if (!from.privateKey || !from.publicKey) return { error: 'Ví đang khởi tạo khóa chữ ký.' }
+  if (!from || !to) return { error: locale === 'vn' ? 'Chọn ví gửi và ví nhận trong danh sách.' : 'Select a sender and a receiver from the list.' }
+  if (from.address === to.address) return { error: locale === 'vn' ? 'Ví gửi và ví nhận phải khác nhau.' : 'Sender and receiver must be different.' }
+  if (amountUnits <= 0) return { error: locale === 'vn' ? 'Amount phải lớn hơn 0.' : 'Amount must be greater than 0.' }
+  if (!from.privateKey || !from.publicKey) return { error: locale === 'vn' ? 'Ví đang khởi tạo khóa chữ ký.' : 'The wallet is still initializing its signing keys.' }
 
   const reserved = snapshot.mempool.filter((transaction) => transaction.from === from.address).reduce((sum, transaction) => {
     try { return sum + parseUnits(transaction.amount) } catch { return sum }
   }, 0)
-  if (from.balance - reserved < amountUnits) return { error: 'Số dư không đủ cho giao dịch và các giao dịch đang chờ.' }
+  if (from.balance - reserved < amountUnits) return { error: locale === 'vn' ? 'Số dư không đủ cho giao dịch và các giao dịch đang chờ.' : 'Insufficient balance for this transaction and the pending ones.' }
   const nonce = from.nonce + snapshot.mempool.filter((transaction) => transaction.from === from.address).length
   const payload = { id: `mempool-${crypto.randomUUID()}`, from: from.address, to: to.address, amount: formatUnits(amountUnits), nonce, signatureStatus: 'signed' as const }
   const signedBytes = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, from.privateKey, new TextEncoder().encode(`${canonicalTransactionWithNonce(payload, nonce)}`))
@@ -93,21 +93,21 @@ export async function createSignedTransaction(fromId: string, toAddress: string,
   return { transaction }
 }
 
-export async function verifyMiningTransaction(transaction: SignedMiningTransaction, accounts: MiningWallet[] = snapshot.wallets, pending: SignedMiningTransaction[] = snapshot.mempool): Promise<{ valid: boolean; reason: string }> {
+export async function verifyMiningTransaction(transaction: SignedMiningTransaction, accounts: MiningWallet[] = snapshot.wallets, pending: SignedMiningTransaction[] = snapshot.mempool, locale: 'vn' | 'en' = 'vn'): Promise<{ valid: boolean; reason: string }> {
   const sender = accounts.find((wallet) => wallet.address.toLowerCase() === transaction.from.toLowerCase())
   const receiver = accounts.find((wallet) => wallet.address.toLowerCase() === transaction.to.toLowerCase())
-  if (!sender?.publicKey || !receiver) return { valid: false, reason: 'Không tìm thấy ví hoặc public key của người gửi.' }
+  if (!sender?.publicKey || !receiver) return { valid: false, reason: locale === 'vn' ? 'Không tìm thấy ví hoặc public key của người gửi.' : 'Sender wallet or public key not found.' }
   const expectedNonce = sender.nonce + pending.filter((item) => item.from.toLowerCase() === sender.address.toLowerCase()).length
-  if (transaction.nonce !== expectedNonce) return { valid: false, reason: `Nonce không hợp lệ: cần ${expectedNonce}.` }
+  if (transaction.nonce !== expectedNonce) return { valid: false, reason: locale === 'vn' ? `Nonce không hợp lệ: cần ${expectedNonce}.` : `Invalid nonce: expected ${expectedNonce}.` }
   const balances = accounts.map((wallet) => ({ address: wallet.address, balance: wallet.balance, nonce: wallet.nonce }))
-  const balanceCheck = canCoverTransactions(balances, [...pending, transaction])
+  const balanceCheck = canCoverTransactions(balances, [...pending, transaction], locale)
   if (!balanceCheck.valid) return balanceCheck
   try {
     const signature = Uint8Array.from(transaction.signature.match(/.{2}/g) ?? [], (byte) => Number.parseInt(byte, 16))
     const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, sender.publicKey, signature, new TextEncoder().encode(`${canonicalTransactionWithNonce(transaction, transaction.nonce)}`))
-    return valid ? { valid: true, reason: '' } : { valid: false, reason: 'Chữ ký ECDSA không hợp lệ.' }
+    return valid ? { valid: true, reason: '' } : { valid: false, reason: locale === 'vn' ? 'Chữ ký ECDSA không hợp lệ.' : 'Invalid ECDSA signature.' }
   } catch {
-    return { valid: false, reason: 'Không thể xác minh chữ ký.' }
+    return { valid: false, reason: locale === 'vn' ? 'Không thể xác minh chữ ký.' : 'Could not verify the signature.' }
   }
 }
 
