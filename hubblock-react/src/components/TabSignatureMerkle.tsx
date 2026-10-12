@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { AlertTriangle, ArrowRight, Check, Copy, Eye, EyeOff, Fingerprint, KeyRound, LockKeyhole, RefreshCw, ShieldCheck, ShieldX, WalletCards } from 'lucide-react'
 import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
-import { hashTransaction } from '../lib/chain'
+import { hashTransaction, merkleTree, verifyMerkleProof, type MerkleProofNode } from '../lib/chain'
 import RealityCheck from './RealityCheck'
 import LearningGoals from './LearningGoals'
 
@@ -63,8 +63,38 @@ function transactionDigest(value: string) {
 function MerkleGraph({ transactions, onTransactionChange }: { transactions: string[]; onTransactionChange: (index: number, value: string) => void }) {
   const txHashes = useMemo(() => transactions.map(transactionDigest), [transactions])
   const baselineHashes = useMemo(() => initialTransactions.map(transactionDigest), [])
+  const tree = useMemo(() => merkleTree(txHashes), [txHashes])
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  return <MerkleTree txHashes={txHashes} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={(index) => setSelectedIndex(index)} onLabelChange={onTransactionChange} />
+  const [proofCheck, setProofCheck] = useState<{ leafIndex: number; leaf: string; proof: MerkleProofNode[]; root: string; valid: boolean } | null>(null)
+
+  function selectLeaf(index: number) {
+    setSelectedIndex(index)
+    setProofCheck(null)
+  }
+
+  function verifySelectedLeaf() {
+    if (selectedIndex === null || !txHashes[selectedIndex]) return
+    const proof = tree.proofs[selectedIndex]
+    setProofCheck({ leafIndex: selectedIndex, leaf: txHashes[selectedIndex], proof, root: tree.root, valid: verifyMerkleProof(txHashes[selectedIndex], proof, tree.root) })
+  }
+
+  return <div className="space-y-3">
+    <MerkleTree txHashes={txHashes} labels={transactions} baselineHashes={baselineHashes} selectedIndex={selectedIndex} onSelect={selectLeaf} onLabelChange={onTransactionChange} />
+    <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-3" aria-label="Xác minh bằng Merkle proof">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-300" />Xác minh bằng Merkle proof</h3><p className="mt-1 text-xs text-slate-400">{selectedIndex === null ? 'Chọn một lá (Tx) trên cây Merkle để chạy chứng minh.' : `Lá đã chọn: Tx ${selectedIndex + 1} · ${tree.proofs[selectedIndex]?.length ?? 0} bước proof.`}</p></div>
+        <button type="button" onClick={verifySelectedLeaf} disabled={selectedIndex === null} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.09] px-3 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.15] disabled:cursor-not-allowed disabled:opacity-45"><ShieldCheck size={14} />Xác minh bằng Merkle proof</button>
+      </div>
+      {proofCheck && <div className="mt-3 space-y-2">
+        <div className="rounded-md border border-slate-700 bg-slate-950/60 p-2.5">
+          <p className="text-xs text-slate-300">Leaf (Tx {proofCheck.leafIndex + 1}): <code className="break-all font-mono text-sky-200">{proofCheck.leaf}</code></p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">{proofCheck.proof.map((node, stepIndex) => <span key={stepIndex} className={`rounded border border-slate-700 px-2 py-1 font-mono text-xs ${node.side === 'left' ? 'text-fuchsia-200' : 'text-cyan-200'}`}>{node.side === 'left' ? '←' : '→'} {node.hash.slice(0, 12)}…</span>)}</div>
+          <p className="mt-1.5 text-xs text-slate-300">Root so khớp: <code className="break-all font-mono text-emerald-200">{proofCheck.root}</code></p>
+        </div>
+        <div role="status" className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${proofCheck.valid ? 'bg-emerald-300/[0.08] text-emerald-200' : 'bg-rose-400/[0.08] text-rose-200'}`}>{proofCheck.valid ? <Check size={14} /> : <ShieldX size={14} />}{proofCheck.valid ? 'Chứng minh HỢP LỆ — đi từ leaf tái tạo đúng root' : 'Chứng minh KHÔNG HỢP LỆ — leaf/proof/root không khớp'}</div>
+      </div>}
+    </section>
+  </div>
 }
 
 function CopyButton({ value, label }: { value: string; label: string }) {
