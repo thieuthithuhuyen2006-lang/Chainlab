@@ -1,3 +1,5 @@
+import { announceAction } from './effects'
+
 export type SoundKind = 'click' | 'transaction' | 'success' | 'error' | 'verified' | 'mined' | 'chirp' | 'undo'
 
 const STORAGE_KEY = 'hubblock-sound'
@@ -38,6 +40,7 @@ export function setSoundMuted(muted: boolean) {
 }
 
 export function playSound(kind: SoundKind) {
+  announceAction(kind)
   if (isSoundMuted()) return
   const audio = getContext()
   if (!audio) return

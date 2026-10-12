@@ -12,6 +12,7 @@ import TabTeam from './components/TabTeam'
 import TabAdvanced from './components/TabAdvanced'
 import TabHome from './components/TabHome'
 import ChipChip from './components/ChipChip'
+import IdleFx from './components/IdleFx'
 import { useLanguage } from './lib/useLanguage'
 import { translations } from './lib/i18n'
 
@@ -76,5 +77,5 @@ export default function App() {
     <section aria-live="polite"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">{active.eyebrow}</p><h2 className="hub-rise mt-1.5 text-lg font-semibold text-slate-100">{active.title}</h2><p className="mt-1 text-xs text-slate-400">{active.description}</p></div>{activeTab !== 'team' && <span className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1.5 font-mono text-[9px] text-slate-400"><span className="hub-pulse-dot size-1.5 rounded-full bg-emerald-400" /> {t('simulationMode')}</span>}</div><motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}><ModuleContent activeTab={activeTab} onNavigate={setActiveTab} /></motion.div></section>
     <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80 pt-4 font-mono text-[9px] uppercase tracking-[0.08em] text-slate-600"><span>HUBBLOCK · LAB</span><span className="inline-flex items-center gap-2"><ShieldCheck size={12} className="text-emerald-400/70" /> {t('educationalSimulation')} · {t('noRealAssets')}</span></footer>
   </main>{projectInfoOpen && <ProjectInfoModal onClose={() => setProjectInfoOpen(false)} />}
-  <ChipChip onNavigate={setActiveTab} /></div></div>
+  <ChipChip onNavigate={setActiveTab} /><IdleFx /></div></div>
 }
