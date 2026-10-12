@@ -143,7 +143,7 @@ export default function ChipChip({ onNavigate }: { onNavigate: (tab: ModuleId) =
             </header>
             <div ref={bodyRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <motion.div key={message.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-5 ${message.role === 'user' ? 'bg-violet-500/25 text-slate-100' : 'border border-slate-800 bg-[#0b0f19]/80 text-slate-200'}`}>
                     {message.role === 'chip' && message.animate && !reducedMotion ? <TypingText text={message.text} /> : message.text}
                     {message.role === 'chip' && message.tab && (
@@ -154,14 +154,14 @@ export default function ChipChip({ onNavigate }: { onNavigate: (tab: ModuleId) =
                     {message.suggestions?.length ? (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {message.suggestions.map((suggestion) => (
-                          <button key={suggestion} type="button" onClick={() => void ask(suggestion)} className="rounded-full border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-[10px] text-slate-300 transition hover:border-violet-300/40 hover:text-slate-100">{suggestion}</button>
+                          <motion.button key={suggestion} type="button" whileHover={{ y: -1 }} whileTap={{ scale: 0.96 }} onClick={() => void ask(suggestion)} className="rounded-full border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-[10px] text-slate-300 transition hover:border-violet-300/40 hover:text-slate-100">{suggestion}</motion.button>
                         ))}
                       </div>
                     ) : null}
                   </div>
-                </div>
+                </motion.div>
               ))}
-              {pending && <div className="flex justify-start"><span className="rounded-xl border border-slate-800 bg-[#0b0f19]/80 px-3 py-2 font-mono text-[10px] text-slate-500">{language === 'VN' ? 'Chíp đang nghĩ…' : 'Chíp is thinking…'}</span></div>}
+              {pending && <div className="flex justify-start"><span className="inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-[#0b0f19]/80 px-3 py-2 font-mono text-[10px] text-slate-500">{language === 'VN' ? 'Chíp đang nghĩ' : 'Chíp is thinking'}<ThinkingDots /></span></div>}
             </div>
             <form
               onSubmit={(event) => { event.preventDefault(); void ask(input) }}
@@ -194,17 +194,48 @@ export default function ChipChip({ onNavigate }: { onNavigate: (tab: ModuleId) =
           </motion.div>
         )}
       </AnimatePresence>
-      <motion.button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-label={labels.ariaOpen}
-        aria-expanded={open}
-        whileTap={{ scale: 0.92 }}
-        className="grid size-14 place-items-center rounded-full border border-violet-300/30 bg-slate-900/90 shadow-lg shadow-black/40 backdrop-blur-md transition hover:border-violet-300/60"
-      >
-        <ChickIcon size={34} />
-      </motion.button>
+      <div className="relative">
+        {!open && !reducedMotion && (
+          <motion.span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full border border-violet-300/40"
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: [0, 0.55, 0], scale: [1, 1.38, 1.5] }}
+            transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.2, ease: 'easeOut' }}
+          />
+        )}
+        <motion.button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label={labels.ariaOpen}
+          aria-expanded={open}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.92 }}
+          animate={open || reducedMotion ? { y: 0, rotate: 0 } : { y: [0, -4, 0], rotate: [0, -3, 0, 3, 0] }}
+          transition={{ duration: 3, repeat: open || reducedMotion ? 0 : Infinity, ease: 'easeInOut' }}
+          className="grid size-14 place-items-center rounded-full border border-violet-300/30 bg-slate-900/90 shadow-lg shadow-black/40 backdrop-blur-md transition hover:border-violet-300/60"
+        >
+          <ChickIcon size={34} />
+        </motion.button>
+      </div>
     </div>
+  )
+}
+
+function ThinkingDots() {
+  const reducedMotion = useReducedMotion()
+  if (reducedMotion) return <span aria-hidden="true">…</span>
+  return (
+    <span className="inline-flex items-center gap-1" aria-hidden="true">
+      {[0, 1, 2].map((index) => (
+        <motion.span
+          key={index}
+          animate={{ opacity: [0.25, 1, 0.25], y: [0, -2, 0] }}
+          transition={{ duration: 1, repeat: Infinity, delay: index * 0.18 }}
+          className="size-1 rounded-full bg-violet-300"
+        />
+      ))}
+    </span>
   )
 }
 

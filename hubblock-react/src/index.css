@@ -56,6 +56,24 @@ button { cursor: pointer; }
 #top[data-active-module='mining'] main > section:first-of-type,
 #top[data-active-module='mining'] main > section:nth-of-type(2) { display: none; }
 #top[data-active-module='mining'] main > section:nth-of-type(3) > div:first-child { display: none; }
+
+/* Ambient life: soft drift, entrances and hovers (all disabled by the reduced-motion rule above) */
+@keyframes hub-pan { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(3%, 14px, 0); } }
+@keyframes hub-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes hub-glow { 0%, 100% { opacity: 0.85; } 50% { opacity: 1.25; } }
+.hub-aura { animation: hub-pan 14s ease-in-out infinite; }
+.hub-rise { animation: hub-rise 0.55s ease-out both; }
+.hub-rise.hub-delay-1 { animation-delay: 0.08s; }
+.hub-rise.hub-delay-2 { animation-delay: 0.16s; }
+.hub-rise.hub-delay-3 { animation-delay: 0.24s; }
+.hub-rise.hub-delay-4 { animation-delay: 0.32s; }
+.hub-lift { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.hub-lift:hover { transform: translateY(-3px); }
+.hub-pulse-dot { animation: hub-glow 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hub-aura, .hub-rise, .hub-pulse-dot { animation: none; }
+  .hub-lift:hover { transform: none; }
+}
 .mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(12px, 1em); }
 
 /* Readability pass: raise sub-11px text so nothing is straining to read */
