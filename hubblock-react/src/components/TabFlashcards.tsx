@@ -4,6 +4,7 @@ import type { ModuleId } from '../Navbar'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeft, ArrowRight, Award, BookOpenCheck, CalendarCheck, Check, CircleAlert, Flame, Layers, RotateCcw, RotateCw, Shuffle, Target, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { useBi, useLanguage } from '../lib/useLanguage'
+import { playSound } from '../lib/sound'
 import { translations, type TranslationKey } from '../lib/i18n'
 import { applyReview, countKnown, earnNewBadges, getBox, loadProgress, resetProgress, saveProgress, setDailyGoal, type BadgeId, type FlashcardProgress } from '../lib/flashcardProgress'
 
@@ -142,6 +143,7 @@ export default function TabFlashcards({ onNavigate }: { onNavigate: (tab: Module
     const newly = progress.badges.filter((badge): badge is BadgeId => !seen.includes(badge))
     seenBadgesRef.current = progress.badges
     newly.forEach((badge) => {
+      playSound('success')
       pushToast(fillTemplate(t('fcToastBadge'), { badge: t(badgeLabelKeys[badge]) }), 'badge')
     })
   })
@@ -221,6 +223,7 @@ export default function TabFlashcards({ onNavigate }: { onNavigate: (tab: Module
 
   function review(status: ReviewStatus) {
     if (!current) return
+    playSound(status === 'again' ? 'undo' : 'verified')
     const cardId = current.id
     setProgress((previous) => earnNewBadges(applyReview(previous, cardId, status), cards).progress)
   }

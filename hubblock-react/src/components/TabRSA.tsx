@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Check, Copy, Eye, EyeOff, FileKey2, Fingerprint, LockKeyhole, RefreshCw, ShieldCheck, ShieldX, UnlockKeyhole } from 'lucide-react'
+import { playSound } from '../lib/sound'
 
 type EncryptionPair = { publicKey: CryptoKey; privateKey: CryptoKey; publicPem: string; privatePem: string }
 type SigningPair = { publicKey: CryptoKey; privateKey: CryptoKey; publicPem: string; privatePem: string }
@@ -74,7 +75,9 @@ export default function TabRSA() {
       setDecryptedText('')
       setSignature('')
       setValidSignature(null)
+      playSound('success')
     } catch {
+      playSound('error')
       setError('RSA key generation requires a secure browser context such as localhost or HTTPS.')
     } finally {
       setGenerating(false)
@@ -82,52 +85,61 @@ export default function TabRSA() {
   }
 
   async function encrypt() {
-    if (!encryptionPair) return setError('Generate an RSA key pair first.')
+    if (!encryptionPair) { playSound('error'); return setError('Generate an RSA key pair first.') }
     setError('')
     try {
       const encrypted = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, encryptionPair.publicKey, encoder.encode(plainText))
       setCipherText(toBase64(encrypted))
       setDecryptedText('')
       setStatus('Encrypted with the recipient public key; only its matching private key can decrypt.')
+      playSound('transaction')
     } catch {
+      playSound('error')
       setError('Encryption failed. RSA-OAEP plaintext may exceed the key-size limit.')
     }
   }
 
   async function decrypt() {
-    if (!encryptionPair || !cipherText) return setError('Encrypt a message before decrypting it.')
+    if (!encryptionPair || !cipherText) { playSound('error'); return setError('Encrypt a message before decrypting it.') }
     setError('')
     try {
       const bytes = Uint8Array.from(atob(cipherText), (character) => character.charCodeAt(0))
       const result = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, encryptionPair.privateKey, bytes)
       setDecryptedText(decoder.decode(result))
       setStatus('Decrypted with the matching private key.')
+      playSound('success')
     } catch {
+      playSound('error')
       setError('Decryption failed. The ciphertext and private key do not match.')
     }
   }
 
   async function sign() {
-    if (!signingPair) return setError('Generate an RSA signing key pair first.')
+    if (!signingPair) { playSound('error'); return setError('Generate an RSA signing key pair first.') }
     setError('')
     setValidSignature(null)
     try {
       const result = await window.crypto.subtle.sign({ name: 'RSA-PSS', saltLength: 32 }, signingPair.privateKey, encoder.encode(message))
       setSignature(toHex(result))
       setStatus('Message signed with RSA-PSS · SHA-256.')
+      playSound('transaction')
     } catch {
+      playSound('error')
       setError('RSA-PSS signing failed.')
     }
   }
 
   async function verify() {
-    if (!signingPair || !signature) return setError('Create a signature before verifying it.')
+    if (!signingPair || !signature) { playSound('error'); return setError('Create a signature before verifying it.') }
     setError('')
     try {
       const bytes = new Uint8Array(signature.match(/.{1,2}/g)?.map((pair) => Number.parseInt(pair, 16)) ?? [])
-      setValidSignature(await window.crypto.subtle.verify({ name: 'RSA-PSS', saltLength: 32 }, signingPair.publicKey, bytes, encoder.encode(message)))
+      const valid = await window.crypto.subtle.verify({ name: 'RSA-PSS', saltLength: 32 }, signingPair.publicKey, bytes, encoder.encode(message))
+      setValidSignature(valid)
+      playSound(valid ? 'verified' : 'error')
     } catch {
       setValidSignature(false)
+      playSound('error')
     }
   }
 

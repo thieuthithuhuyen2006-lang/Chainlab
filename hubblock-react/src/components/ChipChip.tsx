@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowUp, X } from 'lucide-react'
 import type { ModuleId } from '../Navbar'
 import { answerChip } from '../lib/chipEngine'
+import { playSound } from '../lib/sound'
 import { useLanguage } from '../lib/useLanguage'
 
 type ChipMessage = { id: number; role: 'chip' | 'user'; text: string; tab?: ModuleId; suggestions?: string[]; animate?: boolean }
@@ -114,6 +115,7 @@ export default function ChipChip({ onNavigate }: { onNavigate: (tab: ModuleId) =
     setPending(true)
     setMessages((prev) => [...prev, { id: nextId.current++, role: 'user', text: trimmed }])
     const reply = await answerChip(trimmed, language)
+    playSound(reply.known ? 'chirp' : 'undo')
     setMessages((prev) => [...prev, { id: nextId.current++, role: 'chip', text: reply.text, tab: reply.tab, suggestions: reply.suggestions, animate: true }])
     setPending(false)
   }

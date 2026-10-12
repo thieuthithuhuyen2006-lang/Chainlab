@@ -5,6 +5,7 @@ import { hashBlock, hashTransaction, merkleRoot, validateChain } from '../lib/ch
 import { getChainSnapshot, replaceChain, resetChain, setChainDifficulty, undoChainChange, canUndoChainChange } from '../lib/chainStore'
 import { useChain } from '../lib/useChain'
 import { useBi, useLanguage } from '../lib/useLanguage'
+import { playSound } from '../lib/sound'
 import TransactionTable from './TransactionTable'
 import RealityCheck from './RealityCheck'
 import LearningGoals from './LearningGoals'
@@ -32,13 +33,14 @@ export default function TabTamperTest() {
 
   function validateNow() {
     const invalidCount = checks.filter((check) => !check.valid).length
+    playSound(invalidCount === 0 ? 'verified' : 'error')
     setStatus(invalidCount === 0
       ? { vi: 'Kiểm tra xong: toàn bộ chain hợp lệ.', en: 'Check complete: the whole chain is valid.' }
       : { vi: `Kiểm tra xong: ${invalidCount} block chưa hợp lệ; xem checklist từng block.`, en: `Check complete: ${invalidCount} invalid blocks; see the checklist of each block.` })
   }
 
   function undo() {
-    if (undoChainChange()) setStatus({ vi: 'Đã hoàn tác thay đổi gần nhất.', en: 'Undid the latest change.' })
+    if (undoChainChange()) { playSound('undo'); setStatus({ vi: 'Đã hoàn tác thay đổi gần nhất.', en: 'Undid the latest change.' }) }
   }
 
   function reset() {
@@ -48,6 +50,7 @@ export default function TabTamperTest() {
     setProgress([])
     resetChain()
     setSelectedIndex(1)
+    playSound('undo')
     setStatus({ vi: 'Chain đã được đặt lại.', en: 'Chain has been reset.' })
   }
 
@@ -70,13 +73,15 @@ export default function TabTamperTest() {
       workerRef.current = null
       if (result.type === 'done') {
         replaceChain(result.chain)
+        playSound('mined')
         setStatus({ vi: `Đã re-mine ${result.chain.length - fromIndex} block; các liên kết phía sau đã được cập nhật.`, en: `Re-mined ${result.chain.length - fromIndex} blocks; the following links were updated.` })
-      } else setStatus({ vi: `Lỗi mining: ${result.message}`, en: `Mining error: ${result.message}` })
+      } else { playSound('error'); setStatus({ vi: `Lỗi mining: ${result.message}`, en: `Mining error: ${result.message}` }) }
     }
     worker.onerror = () => {
       worker.terminate()
       workerRef.current = null
       setIsMining(false)
+      playSound('error')
       setStatus({ vi: 'Worker gặp lỗi khi re-mine chain.', en: 'Worker error while re-mining the chain.' })
     }
     worker.postMessage({ type: 'remine', chain: getChainSnapshot(), startIndex: fromIndex, difficulty: chain[0]?.difficulty ?? 3 })

@@ -5,6 +5,7 @@ import type { Block, Transaction } from '../lib/chain'
 import { hashTransaction, merkleRoot } from '../lib/chain'
 import { appendMinedBlock, getChainSnapshot, replaceChain } from '../lib/chainStore'
 import { nonceForWorker, selectLongestChain, validatePeerBlock } from '../lib/miningNetwork'
+import { playSound } from '../lib/sound'
 import { configureMiningWallets, createSignedTransaction, ensureMiningWalletKeys, getMiningSnapshot, settleMinedTransactions, useMiningStore, verifyMiningTransaction, type MiningWallet, type SignedMiningTransaction } from '../lib/miningStore'
 import { useChain } from '../lib/useChain'
 import { currentLocale, useBi } from '../lib/useLanguage'
@@ -158,9 +159,11 @@ function MiningRace({ t, store, chain }: { t: (vi: string, en: string) => string
     setTxError('')
     const result = await createSignedTransaction(fromId, wallets.find((wallet) => wallet.id === toId)?.address ?? '', amount, currentLocale())
     if (result.error || !result.transaction) {
+      playSound('error')
       setTxError(result.error ?? t('Không thể tạo giao dịch.', 'Unable to create transaction.'))
       return
     }
+    playSound('transaction')
     setStatus(t('Đã ký ECDSA và thêm giao dịch vào mempool.', 'ECDSA-signed transaction added to the mempool.'))
   }
 
@@ -180,6 +183,7 @@ function MiningRace({ t, store, chain }: { t: (vi: string, en: string) => string
   async function buildTemplate(participants: MiningWallet[]): Promise<RacePlan | null> {
     const validated = await validateMempool(mempool, wallets)
     if (!validated.valid) {
+      playSound('error')
       setStatus(`${t('Mempool bị từ chối:', 'Mempool rejected:')} ${validated.reason}`)
       return null
     }
@@ -200,6 +204,7 @@ function MiningRace({ t, store, chain }: { t: (vi: string, en: string) => string
     appendMinedBlock(block)
     settleMinedTransactions(race.validated, result.workerId, Number(rewardAmount))
     setWinner(result)
+    playSound('mined')
     setWins((current) => ({ ...current, [result.workerId]: (current[result.workerId] ?? 0) + 1 }))
     setStatus(`${result.walletName} ${t('thắng vòng với nonce', 'won with nonce')} ${result.nonce}; ${result.attempts.toLocaleString()} ${t('hash đã thử', 'hashes attempted')}.`)
     setCurrentTemplate(block)
@@ -256,7 +261,7 @@ function MiningRace({ t, store, chain }: { t: (vi: string, en: string) => string
           }
           return
         }
-        if (result.type === 'error') { setStatus(result.message); stopRace(); return }
+        if (result.type === 'error') { playSound('error'); setStatus(result.message); stopRace(); return }
         if (result.type !== 'found') return
         const foundAt = Date.now()
         if (raceWinnerRef.current) {
@@ -402,9 +407,10 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
     if (!origin || !selectedWallet) return
     setTxError('')
     const created = await createSignedTransaction(fromId, toId === fromId ? store.wallets.find((wallet) => wallet.id !== fromId)?.address ?? '' : store.wallets.find((wallet) => wallet.id === toId)?.address ?? '', amount, currentLocale())
-    if (!created.transaction) { setTxError(created.error ?? t('Không thể ký giao dịch.', 'Unable to sign transaction.')); return }
+    if (!created.transaction) { playSound('error'); setTxError(created.error ?? t('Không thể ký giao dịch.', 'Unable to sign transaction.')); return }
     const verification = await verifyMiningTransaction(created.transaction, store.wallets, store.mempool, currentLocale())
-    if (!verification.valid) { setTxError(verification.reason); return }
+    if (!verification.valid) { playSound('error'); setTxError(verification.reason); return }
+    playSound('transaction')
     setPeers((current) => current.map((peer) => peer.id === origin.id ? { ...peer, mempool: [...peer.mempool, created.transaction!] } : peer))
     log(origin.name, t(`Tạo giao dịch đã ký ${shortHash(created.transaction.id)}.`, `Created signed transaction ${shortHash(created.transaction.id)}.`))
     await broadcastTransaction(created.transaction, origin.id)
@@ -413,6 +419,8 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
   async function broadcastTransaction(transaction: SignedMiningTransaction, sourcePeerId: string) {
     const source = peers.find((peer) => peer.id === sourcePeerId)
     if (!source) return
+    let accepted = 0
+    let rejected = 0
     for (const peer of peers) {
       if (peer.id === source.id || !peer.online) continue
       const latency = delayForHop()
@@ -422,19 +430,23 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
       const localPeer = peers.find((item) => item.id === peer.id)
       const verification = await verifyMiningTransaction(transaction, current.wallets, localPeer?.mempool ?? [], currentLocale())
       if (!verification.valid) {
+        rejected += 1
         log(peer.name, `${t('TX bị từ chối:', 'TX rejected:')} ${verification.reason}`, 'reject')
         continue
       }
+      accepted += 1
       setPeers((items) => items.map((item) => item.id === peer.id ? { ...item, mempool: item.mempool.some((tx) => tx.id === transaction.id) ? item.mempool : [...item.mempool, transaction] } : item))
       log(peer.name, `${t('TX đã xác minh và vào mempool:', 'Verified TX accepted into mempool:')} ${shortHash(transaction.id)}`, 'accept')
     }
+    if (accepted) playSound('verified')
+    else if (rejected) playSound('error')
   }
 
   async function startNodeMining() {
     if (!selectedPeer || !selectedWallet || running) return
     setRunning(true)
     const validated = await validateMempool(selectedPeer.mempool, store.wallets)
-    if (!validated.valid) { setRunning(false); log(selectedPeer.name, validated.reason, 'reject'); return }
+    if (!validated.valid) { setRunning(false); playSound('error'); log(selectedPeer.name, validated.reason, 'reject'); return }
     const base = selectedPeer.chain
     const timestamp = new Date().toISOString()
     const round = Date.now().toString()
@@ -454,8 +466,10 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
       const winner = store.wallets.find((wallet) => wallet.id === result.workerId)!
       const block: Block = { ...template, nonce: result.nonce, hash: result.hash }
       setPendingBlock(block)
+      playSound('mined')
       log(selectedPeer.name, `${winner.name} ${t('đào xong block', 'mined block')} #${block.index} · ${result.attempts.toLocaleString()} ${t('hash', 'hashes')}.`, 'accept')
     } catch (error) {
+      playSound('error')
       log(selectedPeer.name, error instanceof Error ? error.message : t('Mining thất bại.', 'Mining failed.'), 'reject')
     } finally {
       workerRef.current.forEach((worker) => worker.terminate())
@@ -482,10 +496,12 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
       log(peer.name, `${t('Chấp nhận block', 'Accepted block')} #${block.index} · ${shortHash(block.hash)}.`, 'accept')
     }
     if (!acceptedPeerIds.length) {
+      playSound('error')
       log(origin.name, t('Không node nào chấp nhận block; chain và số dư không đổi.', 'No peer accepted the block; chain and balances unchanged.'), 'reject')
       setRunning(false)
       return
     }
+    playSound('verified')
     const acceptedChains = peers.filter((peer) => acceptedPeerIds.includes(peer.id)).map((peer) => [...peer.chain, block])
     const longest = selectLongestChain([...acceptedChains, chain])
     replaceChain(longest)
@@ -493,6 +509,7 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
       const miner = store.wallets.find((wallet) => wallet.address === block.validator)
       settleMinedTransactions(txs, miner?.id ?? '', Number(rewardAmount))
     } else {
+      playSound('error')
       setOrphans((current) => [...current, block])
       log(origin.name, `${t('Block không nằm trong chuỗi dài nhất:', 'Block was not selected as the longest-chain tip:')} ${shortHash(block.hash)}`, 'fork')
     }
@@ -511,6 +528,7 @@ function P2PNetwork({ t, store, chain }: { t: (vi: string, en: string) => string
       const result = validatePeerBlock(fake, peer.chain, fake.difficulty, txResult.valid)
       log(peer.name, `${t('Block độc hại bị từ chối:', 'Malicious block rejected:')} ${txResult.reason || result.reason}`, 'reject')
     }
+    playSound('error')
   }
 
   async function mineForkCandidate(base: Block[], wallet: MiningWallet, tag: string): Promise<Block> {

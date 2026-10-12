@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { ModuleId } from '../Navbar'
 import { countDifferentBits, formatHash, sha256, sha256Bytes } from '../lib/sha256'
+import { playSound } from '../lib/sound'
 import RealityCheck from './RealityCheck'
 import LearningGoals from './LearningGoals'
 
@@ -343,6 +344,7 @@ function PreimageCard({ hash, t }: { hash: string; t: (key: TranslationKey) => s
         setAttemptCount(result.attempts ?? attemptCount)
         setElapsedMs(result.elapsedMs ?? Date.now() - started)
         setStatus(result.type === 'found' ? `${t('found')}: ${result.input}` : result.type === 'not-found' ? t('exhausted') : result.message ?? t('randomError'))
+        playSound(result.type === 'found' ? 'verified' : 'error')
         if (result.input) setRecent((values) => [...values.slice(-9), result.input ?? ''])
       }
     }

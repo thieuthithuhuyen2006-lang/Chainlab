@@ -6,6 +6,7 @@ import { appendMinedBlock, getChainSnapshot } from '../lib/chainStore'
 import { useChain } from '../lib/useChain'
 import { currentLocale, useBi } from '../lib/useLanguage'
 import { useMiningStore, verifyMiningTransaction, settleMinedTransactions, type MiningWallet } from '../lib/miningStore'
+import { playSound } from '../lib/sound'
 import {
   type Validator as PosValidator,
   getActiveValidators,
@@ -165,6 +166,7 @@ export function EthereumPoSLab() {
     const sufficient = isAttestationSufficient(validators, attestedIds)
 
     if (!sufficient) {
+      playSound('error')
       addEvent('system', `Slot ${slot} MISSED: attestation weight ${percentage.toFixed(1)}% < ${(DEFAULT_POS_CONFIG.attestationThreshold * 100).toFixed(1)}%.`, 'No block produced, no rewards issued.')
       setPhase('idle')
       setProposerId(null)
@@ -187,6 +189,7 @@ export function EthereumPoSLab() {
     posBlock.hash = hashBlock(posBlock)
     appendMinedBlock(posBlock)
     settleMinedTransactions(validTxs, currentProposer.id, proposerReward)
+    playSound('mined')
 
     addEvent('attestation', `Block #${posBlock.index} included · ${attestedIds.length} attestations (${percentage.toFixed(1)}% stake).`, `${currentProposer.name} +${formatEth(proposerReward)} · committee +${formatEth(attesterReward)} each`)
   }
@@ -209,6 +212,7 @@ export function EthereumPoSLab() {
 
     const { validators: newValidators, confiscatedStake } = applySlashing(validators, slashTarget.id, 0.5)
     setValidators(newValidators)
+    playSound('error')
 
     if (proposerId === slashTarget.id && phase === 'proposed') {
       setPhase('idle')

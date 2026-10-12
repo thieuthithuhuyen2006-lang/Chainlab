@@ -4,6 +4,7 @@ import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
 import { hashTransaction, merkleTree, verifyMerkleProof, type MerkleProofNode } from '../lib/chain'
 import { useBi, useLanguage } from '../lib/useLanguage'
+import { playSound } from '../lib/sound'
 import RealityCheck from './RealityCheck'
 import LearningGoals from './LearningGoals'
 
@@ -78,7 +79,9 @@ function MerkleGraph({ transactions, onTransactionChange }: { transactions: stri
   function verifySelectedLeaf() {
     if (selectedIndex === null || !txHashes[selectedIndex]) return
     const proof = tree.proofs[selectedIndex]
-    setProofCheck({ leafIndex: selectedIndex, leaf: txHashes[selectedIndex], proof, root: tree.root, valid: verifyMerkleProof(txHashes[selectedIndex], proof, tree.root) })
+    const valid = verifyMerkleProof(txHashes[selectedIndex], proof, tree.root)
+    playSound(valid ? 'verified' : 'error')
+    setProofCheck({ leafIndex: selectedIndex, leaf: txHashes[selectedIndex], proof, root: tree.root, valid })
   }
 
   return <div className="space-y-3">
@@ -171,7 +174,9 @@ export default function TabSignatureMerkle() {
       setVerifySignature('')
       setVerifyMessage('')
       setVerification(null)
+      playSound('success')
     } catch {
+      playSound('error')
       setError({ vi: 'Không thể tạo khóa. Hãy mở ứng dụng trên localhost hoặc trình duyệt hỗ trợ Web Crypto.', en: 'Could not create keys. Open the app on localhost or a browser with Web Crypto support.' })
     } finally {
       setKeyLoading(false)
@@ -181,9 +186,9 @@ export default function TabSignatureMerkle() {
   async function handleSignTransaction() {
     setError(null)
     setVerification(null)
-    if (!wallet) return setError({ vi: 'Hãy tạo ví trước khi ký giao dịch.', en: 'Create a wallet before signing a transaction.' })
-    if (!sender.trim() || !receiver.trim() || !amount.trim()) return setError({ vi: 'Vui lòng nhập ví gửi, ví nhận và số tiền.', en: 'Please enter sender, receiver and amount.' })
-    if (sender.trim().toLowerCase() !== wallet.address.toLowerCase()) return setError({ vi: 'Ví gửi phải khớp với địa chỉ của key pair đang dùng để ký.', en: 'The sender must match the address of the key pair used to sign.' })
+    if (!wallet) { playSound('error'); return setError({ vi: 'Hãy tạo ví trước khi ký giao dịch.', en: 'Create a wallet before signing a transaction.' }) }
+    if (!sender.trim() || !receiver.trim() || !amount.trim()) { playSound('error'); return setError({ vi: 'Vui lòng nhập ví gửi, ví nhận và số tiền.', en: 'Please enter sender, receiver and amount.' }) }
+    if (sender.trim().toLowerCase() !== wallet.address.toLowerCase()) { playSound('error'); return setError({ vi: 'Ví gửi phải khớp với địa chỉ của key pair đang dùng để ký.', en: 'The sender must match the address of the key pair used to sign.' }) }
 
     setSigning(true)
     try {
@@ -191,7 +196,9 @@ export default function TabSignatureMerkle() {
       setVerifyMessage(payload)
       setVerifyPublicKey(wallet.publicKeyHex)
       setVerifySignature(bufferToHex(signature))
+      playSound('transaction')
     } catch {
+      playSound('error')
       setError({ vi: 'Ký giao dịch thất bại. Hãy tạo key pair mới và thử lại.', en: 'Signing failed. Generate a new key pair and try again.' })
     } finally {
       setSigning(false)
@@ -203,6 +210,7 @@ export default function TabSignatureMerkle() {
     setVerification(null)
     if (!verifyMessage.trim() || !verifyPublicKey.trim() || !verifySignature.trim()) {
       setVerification(false)
+      playSound('error')
       setError({ vi: 'Cần nhập đủ Message, Public Key và Digital Signature để xác thực.', en: 'Message, Public Key and Digital Signature are all required to verify.' })
       return
     }
@@ -212,8 +220,10 @@ export default function TabSignatureMerkle() {
       const publicKey = await window.crypto.subtle.importKey('raw', hexToBuffer(verifyPublicKey), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify'])
       const valid = await window.crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, publicKey, hexToBuffer(verifySignature), encoder.encode(verifyMessage))
       setVerification(valid)
+      playSound(valid ? 'verified' : 'error')
     } catch {
       setVerification(false)
+      playSound('error')
     } finally {
       setVerifying(false)
     }
