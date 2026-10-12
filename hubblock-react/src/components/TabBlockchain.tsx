@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Clock3, Check, AlertCircle, Search } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Clock3, Check, AlertCircle, Copy, Search } from 'lucide-react'
 import MerkleTree from './MerkleTree'
 import TransactionTable from './TransactionTable'
 import { hashBlock, hashTransaction, merkleRoot, validateChain, blockHashPreimage, verifyMerkleProof, merkleTree, type Block } from '../lib/chain'
@@ -55,6 +56,10 @@ export default function TabBlockchain() {
   const txHashes = useMemo(() => block.transactions.map(hashTransaction), [block.transactions])
   const tree = useMemo(() => merkleTree(txHashes), [txHashes])
   const makeHashes = (count: number) => Array.from({ length: count }, (_, index) => hashTransaction({ from: `A${index}`, to: `B${index}`, amount: String(index + 1) }))
+  const reducedMotion = useReducedMotion()
+  const cveHashes = makeHashes(3)
+  const cveRootThree = merkleRoot(cveHashes)
+  const cveRootFour = merkleRoot([...cveHashes, cveHashes[2]])
   const fieldRoles: Record<string, string> = {
     index: b('Vị trí của block trong chuỗi.', 'Position of the block in the chain.'),
     data: b('Nội dung được lưu trong block cơ bản.', 'Payload stored in the basic block.'),
@@ -139,20 +144,29 @@ export default function TabBlockchain() {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div className="rounded-md border border-slate-700 bg-slate-950/60 p-3">
           <h4 className="text-xs font-semibold text-slate-200">{b('3 giao dịch: [A, B, C]', '3 transactions: [A, B, C]')}</h4>
-          <p className="mt-1 text-xs text-slate-300">Root: <code className="font-mono text-sky-200">{merkleRoot(makeHashes(3))}</code></p>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">{['A', 'B', 'C'].map((letter, position) => <motion.span key={letter} initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, delay: position * 0.12, ease: 'easeOut' }} className="grid size-7 place-items-center rounded border border-slate-600 bg-slate-900 font-mono text-xs font-semibold text-slate-200">{letter}</motion.span>)}</div>
+          <p className="mt-1 text-xs text-slate-300">Root: <code className={`font-mono text-sky-200 ${reducedMotion ? '' : 'hub-merkle-root inline-block rounded px-1'}`}>{cveRootThree}</code></p>
           <p className="mt-1 text-xs text-slate-400">{b('Cây: (A+B) + (C+C) → root', 'Tree: (A+B) + (C+C) → root')}</p>
         </div>
         <div className="rounded-md border border-slate-700 bg-slate-950/60 p-3">
           <h4 className="text-xs font-semibold text-slate-200">{b('4 giao dịch: [A, B, C, C] (C bị nhân đôi)', '4 transactions: [A, B, C, C] (C duplicated)')}</h4>
-          <p className="mt-1 text-xs text-slate-300">Root: <code className="font-mono text-sky-200">{merkleRoot([...makeHashes(3), makeHashes(3)[2]])}</code></p>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">{['A', 'B', 'C'].map((letter, position) => <motion.span key={letter} initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.3, delay: position * 0.12, ease: 'easeOut' }} className="grid size-7 place-items-center rounded border border-slate-600 bg-slate-900 font-mono text-xs font-semibold text-slate-200">{letter}</motion.span>)}<motion.span initial={reducedMotion ? false : { opacity: 0, scale: 0.5, x: -12 }} animate={reducedMotion ? undefined : { opacity: [0, 1, 1], scale: [0.5, 1.18, 1], x: [-12, 4, 0] }} transition={{ duration: 0.9, repeat: Infinity, repeatDelay: 2.6, ease: 'easeInOut' }} className="inline-flex items-center gap-1 rounded border border-amber-300/60 bg-amber-300/10 px-1.5 py-1 font-mono text-xs font-semibold text-amber-100"><Copy size={11} />C</motion.span></div>
+          <p className="mt-1 text-xs text-slate-300">Root: <code className={`font-mono text-sky-200 ${reducedMotion ? '' : 'hub-merkle-root inline-block rounded px-1'}`}>{cveRootFour}</code></p>
           <p className="mt-1 text-xs text-slate-400">{b('Cây: (A+B) + (C+C) → root', 'Tree: (A+B) + (C+C) → root')}</p>
         </div>
       </div>
-      <div className="mt-3 rounded-md p-3" style={{ backgroundColor: merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? '#0f241a' : '#24151d' }}>
+      <div className="mt-2.5 flex flex-wrap items-center justify-center gap-2">
+        <code className="max-w-[42%] truncate font-mono text-xs text-sky-200">{cveRootThree.slice(0, 14)}…</code>
+        <span className="relative block h-px w-16 sm:w-24"><motion.i className="absolute left-0 top-[-4px] block size-2 rounded-full bg-emerald-300" initial={false} animate={reducedMotion ? undefined : { x: [0, 56] }} transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 1.1, ease: 'easeInOut' }} /></span>
+        <motion.span className="font-mono text-sm font-semibold text-emerald-200" initial={false} animate={reducedMotion ? undefined : { opacity: [0.5, 1, 0.5], scale: [1, 1.14, 1] }} transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}>≡</motion.span>
+        <span className="relative block h-px w-16 sm:w-24"><motion.i className="absolute left-0 top-[-4px] block size-2 rounded-full bg-emerald-300" initial={false} animate={reducedMotion ? undefined : { x: [56, 0] }} transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 1.1, ease: 'easeInOut' }} /></span>
+        <code className="max-w-[42%] truncate font-mono text-xs text-sky-200">{cveRootFour.slice(0, 14)}…</code>
+      </div>
+      <div className="mt-3 rounded-md p-3" style={{ backgroundColor: cveRootThree === cveRootFour ? '#0f241a' : '#24151d' }}>
         <div className="flex items-center gap-2">
-          {merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? <Check className="text-emerald-300" size={16} /> : <AlertCircle className="text-rose-300" size={16} />}
-          <span className="text-xs font-semibold" style={{ color: merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? '#6ee7b7' : '#fb7185' }}>
-            {merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? b('CẢNH BÁO: Cùng root — tấn công CVE-2012-2459 có thể xảy ra', 'WARNING: Same root — the CVE-2012-2459 attack is possible') : b('Root khác nhau (không mong đợi)', 'Different roots (unexpected)')}
+          {cveRootThree === cveRootFour ? <motion.span initial={false} animate={reducedMotion ? undefined : { scale: [1, 1.2, 1] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }} className="inline-flex"><Check className="text-emerald-300" size={16} /></motion.span> : <AlertCircle className="text-rose-300" size={16} />}
+          <span className="text-xs font-semibold" style={{ color: cveRootThree === cveRootFour ? '#6ee7b7' : '#fb7185' }}>
+            {cveRootThree === cveRootFour ? b('CẢNH BÁO: Cùng root — tấn công CVE-2012-2459 có thể xảy ra', 'WARNING: Same root — the CVE-2012-2459 attack is possible') : b('Root khác nhau (không mong đợi)', 'Different roots (unexpected)')}
           </span>
         </div>
       </div>
