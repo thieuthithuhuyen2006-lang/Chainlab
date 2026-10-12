@@ -74,13 +74,15 @@ button { cursor: pointer; }
   .hub-aura, .hub-rise, .hub-pulse-dot { animation: none; }
   .hub-lift:hover { transform: none; }
 }
-.mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(12px, 1em); }
+.mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(13px, 1em); }
 
-/* Readability pass: raise sub-11px text so nothing is straining to read */
-.text-\[8px\] { font-size: 0.6875rem; line-height: 1rem; }
-.text-\[9px\] { font-size: 0.75rem; line-height: 1.125rem; }
-.text-\[10px\] { font-size: 0.8125rem; line-height: 1.25rem; }
-.text-xs { font-size: 0.8125rem; line-height: 1.25rem; }
-.text-sm { font-size: 0.9375rem; line-height: 1.5rem; }
-.leading-4 { line-height: 1.25rem; }
-.leading-5 { line-height: 1.375rem; }
+/* Readability pass: every small size raised one more step so text is comfortable at normal distance */
+.text-\[8px\] { font-size: 0.75rem; line-height: 1.125rem; }
+.text-\[9px\] { font-size: 0.8125rem; line-height: 1.25rem; }
+.text-\[10px\] { font-size: 0.875rem; line-height: 1.375rem; }
+.text-\[11px\] { font-size: 0.9375rem; line-height: 1.5rem; }
+.text-xs { font-size: 0.875rem; line-height: 1.375rem; }
+.text-sm { font-size: 1rem; line-height: 1.625rem; }
+.text-base { font-size: 1.0625rem; line-height: 1.75rem; }
+.leading-4 { line-height: 1.375rem; }
+.leading-5 { line-height: 1.5rem; }
