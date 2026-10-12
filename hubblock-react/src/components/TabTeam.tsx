@@ -1,5 +1,5 @@
 import { GraduationCap, Mail, UsersRound } from 'lucide-react'
-import hubLogo from '../../public/hub-logo.png'
+import hubLogo from '../assets/hub-logo.png'
 import { useLanguage } from '../lib/useLanguage'
 import { translations } from '../lib/i18n'
 

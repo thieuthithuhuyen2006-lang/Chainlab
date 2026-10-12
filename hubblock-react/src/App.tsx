@@ -54,7 +54,7 @@ function ModuleContent({ activeTab, onNavigate }: { activeTab: ModuleId; onNavig
   if (activeTab === 'hash') return <TabSHA256 onNavigate={onNavigate} />
   if (activeTab === 'mining') return <TabMining />
   if (activeTab === 'rsa') return <TabCrypto />
-  if (activeTab === 'flashcards') return <TabFlashcards />
+  if (activeTab === 'flashcards') return <TabFlashcards onNavigate={onNavigate} />
   if (activeTab === 'project') return <TabProject />
   return <TabTeam />
 }

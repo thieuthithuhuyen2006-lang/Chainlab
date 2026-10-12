@@ -115,6 +115,49 @@ export type TranslationKey =
   | 'validateLabel'
   | 'undoLabel'
   | 'resetChainLabel'
+  | 'fcTopicGridTitle'
+  | 'fcSelectTopic'
+  | 'fcAllTopics'
+  | 'fcCardsCount'
+  | 'fcProgress'
+  | 'fcLevelFilter'
+  | 'fcLevelAll'
+  | 'fcLevelBasic'
+  | 'fcLevelIntermediate'
+  | 'fcLevelAdvanced'
+  | 'fcBackToTopics'
+  | 'fcKnown'
+  | 'fcTotal'
+  | 'fcBackToAll'
+  | 'fcSelectTopicToStart'
+  | 'fcNoCardsInTopic'
+  | 'fcReviewKnownCount'
+  | 'fcLevelUnknown'
+  | 'fcChooseTopic'
+  | 'fcAll'
+  | 'fcBasic'
+  | 'fcIntermediate'
+  | 'fcAdvanced'
+  | 'fcTotalCards'
+  | 'fcBack'
+  | 'fcNoMatchingCards'
+  | 'fcLearningProgress'
+  | 'fcDailyGoal'
+  | 'fcTodayProgress'
+  | 'fcStreak'
+  | 'fcReviewToday'
+  | 'fcResetProgress'
+  | 'fcResetConfirmTitle'
+  | 'fcResetConfirmDesc'
+  | 'fcResetConfirmAction'
+  | 'fcResetCancel'
+  | 'fcResetDone'
+  | 'fcBadges'
+  | 'fcBadgeTopicComplete'
+  | 'fcBadgeStreak3'
+  | 'fcBadgeStreak7'
+  | 'fcBadgeKnow50'
+  | 'fcToastBadge'
 
 export const translations = {
   VN: {
@@ -240,6 +283,49 @@ export const translations = {
     validateLabel: 'Kiểm tra lại (Validate)',
     undoLabel: 'Hoàn tác',
     resetChainLabel: 'Reset chain',
+    fcTopicGridTitle: 'Chọn chủ đề học tập',
+    fcSelectTopic: 'Chọn một chủ đề để bắt đầu',
+    fcAllTopics: 'Tất cả chủ đề',
+    fcCardsCount: '{count} thẻ',
+    fcProgress: 'Tiến độ: {known}/{total}',
+    fcLevelFilter: 'Lọc mức độ',
+    fcLevelAll: 'Tất cả',
+    fcLevelBasic: 'Cơ bản',
+    fcLevelIntermediate: 'Trung bình',
+    fcLevelAdvanced: 'Nâng cao',
+    fcBackToTopics: 'Quay lại chủ đề',
+    fcTotal: 'Tổng',
+    fcBackToAll: 'Quay lại tất cả',
+    fcSelectTopicToStart: 'Chọn một chủ đề để bắt đầu học',
+    fcNoCardsInTopic: 'Chưa có thẻ nào trong chủ đề này',
+    fcReviewKnownCount: 'Đã thuộc {known}/{total} thẻ',
+    fcLevelUnknown: 'Chưa xác định',
+    fcChooseTopic: 'Chọn chủ đề học tập',
+    fcAll: 'Tất cả',
+    fcBasic: 'Cơ bản',
+    fcIntermediate: 'Trung bình',
+    fcAdvanced: 'Nâng cao',
+    fcTotalCards: 'Tổng số thẻ',
+    fcKnown: 'Đã biết',
+    fcBack: 'Quay lại',
+    fcNoMatchingCards: 'Không có thẻ phù hợp',
+    fcLearningProgress: 'Tiến độ học',
+    fcDailyGoal: 'Mục tiêu hàng ngày',
+    fcTodayProgress: 'Hôm nay: {count}/{goal}',
+    fcStreak: 'Chuỗi {count} ngày',
+    fcReviewToday: 'Ôn hôm nay',
+    fcResetProgress: 'Đặt lại tiến độ',
+    fcResetConfirmTitle: 'Đặt lại tiến độ?',
+    fcResetConfirmDesc: 'Xóa toàn bộ hộp Leitner, chuỗi ngày và huy hiệu. Mục tiêu hàng ngày được giữ nguyên.',
+    fcResetConfirmAction: 'Đồng ý đặt lại',
+    fcResetCancel: 'Hủy',
+    fcResetDone: 'Đã đặt lại tiến độ',
+    fcBadges: 'Huy hiệu',
+    fcBadgeTopicComplete: 'Hoàn thành chủ đề',
+    fcBadgeStreak3: 'Chuỗi 3 ngày',
+    fcBadgeStreak7: 'Chuỗi 7 ngày',
+    fcBadgeKnow50: 'Thuộc 50 thẻ',
+    fcToastBadge: 'Huy hiệu mới: {badge}',
   },
   EN: {
     appTitle: 'Explore blockchain',
@@ -364,5 +450,48 @@ export const translations = {
     validateLabel: 'Validate',
     undoLabel: 'Undo',
     resetChainLabel: 'Reset chain',
+    fcTopicGridTitle: 'Select a topic to study',
+    fcSelectTopic: 'Choose a topic to begin',
+    fcAllTopics: 'All topics',
+    fcCardsCount: '{count} cards',
+    fcProgress: 'Progress: {known}/{total}',
+    fcLevelFilter: 'Filter by level',
+    fcLevelAll: 'All',
+    fcLevelBasic: 'Basic',
+    fcLevelIntermediate: 'Intermediate',
+    fcLevelAdvanced: 'Advanced',
+    fcBackToTopics: 'Back to topics',
+    fcTotal: 'Total',
+    fcBackToAll: 'Back to all',
+    fcSelectTopicToStart: 'Choose a topic to begin learning',
+    fcNoCardsInTopic: 'No cards in this topic yet',
+    fcReviewKnownCount: 'Known {known}/{total} cards',
+    fcLevelUnknown: 'Unspecified',
+    fcChooseTopic: 'Choose a topic to study',
+    fcAll: 'All',
+    fcBasic: 'Basic',
+    fcIntermediate: 'Intermediate',
+    fcAdvanced: 'Advanced',
+    fcTotalCards: 'Total cards',
+    fcKnown: 'Known',
+    fcBack: 'Back',
+    fcNoMatchingCards: 'No matching flashcards',
+    fcLearningProgress: 'Learning progress',
+    fcDailyGoal: 'Daily goal',
+    fcTodayProgress: 'Today: {count}/{goal}',
+    fcStreak: '{count}-day streak',
+    fcReviewToday: 'Review today',
+    fcResetProgress: 'Reset progress',
+    fcResetConfirmTitle: 'Reset progress?',
+    fcResetConfirmDesc: 'This clears all Leitner boxes, streak and badges. Your daily goal is kept.',
+    fcResetConfirmAction: 'Yes, reset',
+    fcResetCancel: 'Cancel',
+    fcResetDone: 'Progress reset',
+    fcBadges: 'Badges',
+    fcBadgeTopicComplete: 'Topic complete',
+    fcBadgeStreak3: '3-day streak',
+    fcBadgeStreak7: '7-day streak',
+    fcBadgeKnow50: 'Know 50 cards',
+    fcToastBadge: 'New badge: {badge}',
   },
 }

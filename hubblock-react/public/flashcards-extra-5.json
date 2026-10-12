@@ -1,0 +1,107 @@
+[
+  {
+    "id": 87,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Wholesale CBDC vs Retail CBDC phục vụ đối tượng nào?",
+    "answer": "Wholesale: ngân hàng thương mại, tổ chức tài chính (interbank settlement, cross-border). Retail: công dân, doanh nghiệp (thanh toán hàng ngày, financial inclusion).",
+    "level": "basic"
+  },
+  {
+    "id": 88,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Project mBridge (BIS) kết nối CBDC cross-border như thế nào?",
+    "answer": "Platform DLT permissioned (mBridge Ledger) kết nối multiple CBDC. PvP (Payment versus Payment) atomic settlement. Tham gia: HKMA, BOT, PBOC, CBUAE, BIS.",
+    "level": "intermediate"
+  },
+  {
+    "id": 89,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Regulated Liability Network (RLN) giải quyết vấn đề gì?",
+    "answer": "Mạng lưới multi-bank dùng shared ledger để settle tokenized deposit (commercial bank money) real-time, 24/7, atomic. Khác CBDC: liability của commercial bank, không phải central bank.",
+    "level": "intermediate"
+  },
+  {
+    "id": 90,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Tokenized deposit (deposit token) khác stablecoin ra sao?",
+    "answer": "Deposit token: claim trên deposit tại ngân hàng cụ thể, chịu rủi ro counterparty bank đó, KYC/AML ngân hàng thực hiện. Stablecoin: claim trên reserve pool, issuer tập trung.",
+    "level": "advanced"
+  },
+  {
+    "id": 91,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "ISO 20022 là gì và liên quan đến blockchain như thế nào?",
+    "answer": "Tiêu chuẩn messaging tài chính toàn cầu (thay thế SWIFT MT). Dữ liệu phong phú, structured. Blockchain/CBDC adopt ISO 20022 cho interoperability, straight-through processing, rich data trong transaction.",
+    "level": "intermediate"
+  },
+  {
+    "id": 92,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Project Guardian (MAS Singapore) thử nghiệm tài sản tokenized nào?",
+    "answer": "Fixed income, foreign exchange, asset management. Dùng permissioned liquidity pool, AMM cho institutional. Khung pháp lý: Variable Capital Company (VCC), trust structure cho tokenized fund.",
+    "level": "advanced"
+  },
+  {
+    "id": 93,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "HQLAx (High Quality Liquid Assets Exchange) dùng DLT cho mục đích gì?",
+    "answer": "Cho phép ngân hàng collateral swap (HQLA) peer-to-peer real-time, mở khóa thanh khoản intraday. Smart contract tự động margin call, substitution. Giảm chi phí funding, tăng hiệu suất vốn.",
+    "level": "advanced"
+  },
+  {
+    "id": 94,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Trade finance trên blockchain (Marco Polo, Contour, we.trade) giải quyết bài toán nào?",
+    "answer": "Digitize letter of credit, bill of lading, invoice. Giảm giấy tờ, thời gian từ ngày->giờ, chống fraud (duplicate financing), auto-compliance. Smart contract trigger payment khi điều kiện thỏa mãn.",
+    "level": "intermediate"
+  },
+  {
+    "id": 95,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Syndicated loan trên blockchain cải tiến quy trình truyền thống ra sao?",
+    "answer": "Smart contract tự động phân chia principal/interest cho lender, secondary trading tokenized loan share, real-time reporting. Giảm operational risk, settlement T+0 thay vì T+7 đến T+30.",
+    "level": "advanced"
+  },
+  {
+    "id": 96,
+    "category": "Bảo mật & Tấn công",
+    "question": "Cross-chain bridge attack vector phổ biến nhất là gì?",
+    "answer": "Compromise validator set/relayer (private key, social engineering), smart contract bug (verify proof), consensus failure trên chain nguồn. Bridge lock/mint hoặc lock/burn đều có rủi ro custody.",
+    "level": "advanced"
+  },
+  {
+    "id": 97,
+    "category": "Bảo mật & Tấn công",
+    "question": "Smart contract audit quy trình cơ bản bao gồm những gì?",
+    "answer": "Threat modeling → Static analysis (Slither, Mythril) → Manual review (logic, access control, math) → Fuzzing (Echidna, Foundry) → Formal verification (Certora) → Report với severity (Critical/High/Medium/Low).",
+    "level": "advanced"
+  },
+  {
+    "id": 98,
+    "category": "Smart contract",
+    "question": "EIP-2930 Access List và EIP-1559 gas market cải thiện UX ra sao?",
+    "answer": "Access list: khai báo trước storage/address truy cập, giảm gas cost cho warm access. EIP-1559: base fee burn + priority tip, fee market ổn định hơn, dự đoán gas tốt hơn first-price auction.",
+    "level": "intermediate"
+  },
+  {
+    "id": 99,
+    "category": "Smart contract",
+    "question": "Solidity custom error (error NotEnoughBalance()) tiết kiệm gas như thế nào?",
+    "answer": "Thay require/revert string bằng error có selector 4 byte. Không lưu string trong bytecode. Argument encoded trong revert data. Gas revert thấp hơn đáng kể so với string message.",
+    "level": "intermediate"
+  },
+  {
+    "id": 100,
+    "category": "Smart contract",
+    "question": "ERC-165 interface detection dùng để làm gì?",
+    "answer": "Contract hỗ trợ interface (như ERC-721, ERC-1155) implement supportsInterface(bytes4) trả về true. Caller kiểm tra trước khi gọi method đặc thù, tránh revert, cho phép composability an toàn.",
+    "level": "basic"
+  },
+  {
+    "id": 101,
+    "category": "Ví & Chữ ký số",
+    "question": "Social recovery (EIP-3074, ERC-4337) cho phép khôi phục tài khoản như thế nào?",
+    "answer": "Guardians (người tin cậy) ký off-chain authorize recovery address mới. Smart contract wallet verify chữ ký guardian quorum và cập nhật owner/key. Không cần seed phrase.",
+    "level": "advanced"
+  }
+]
