@@ -1,0 +1,107 @@
+[
+  {
+    "id": 57,
+    "category": "Đồng thuận PoS",
+    "question": "Finality trong Ethereum PoS (Gasper) đạt được như thế nào?",
+    "answer": "Khi 2/3 validator attest cho cùng một checkpoint (epoch boundary), checkpoint đó justified. Hai checkpoint justified liên tiếp → checkpoint đầu tiên finalized.",
+    "level": "basic"
+  },
+  {
+    "id": 58,
+    "category": "Đồng thuận PoS",
+    "question": "Inactivity leak phạt validator offline ra sao?",
+    "answer": "Khi chain không finalize >4 epoch, stake validator offline bị trừ dần (leak) cho đến khi finality trở lại. Validator online không bị phạt.",
+    "level": "intermediate"
+  },
+  {
+    "id": 59,
+    "category": "Đồng thuận PoS",
+    "question": "Sync committee trong Ethereum PoS đóng vai trò gì?",
+    "answer": "512 validator ngẫu nhiên ký block header mỗi epoch (~27 giờ). Light client dùng chữ ký tập thể này để xác minh chain head nhanh, không cần verify tất cả attestation.",
+    "level": "intermediate"
+  },
+  {
+    "id": 60,
+    "category": "Đồng thuận PoS",
+    "question": "MEV (Maximal Extractable Value) trong PoS khác PoW ra sao?",
+    "answer": "Proposer độc quyền sắp xếp transaction trong slot. Builder (MEV-Boost) cạnh tranh cung cấp block giá cao nhất cho proposer. PoW miner cũng có quyền này nhưng độ chính xác slot PoS dễ predict hơn.",
+    "level": "advanced"
+  },
+  {
+    "id": 61,
+    "category": "Smart contract",
+    "question": "Reentrancy attack xảy ra như thế nào và cách phòng tránh?",
+    "answer": "Contract gọi external contract, kẻ tấn công gọi lại function gốc trước khi state cập nhật. Phòng: Checks-Effects-Interactions, ReentrancyGuard (mutex), pull payment thay vì push.",
+    "level": "basic"
+  },
+  {
+    "id": 62,
+    "category": "Smart contract",
+    "question": "Integer overflow/underflow trong Solidity 0.8+ được xử lý ra sao?",
+    "answer": "Solidity 0.8+ bật built-in checked arithmetic mặc định. Overflow/underflow revert tự động. Dùng unchecked { } block để bỏ qua kiểm tra khi chắc chắn an toàn (tiết kiệm gas).",
+    "level": "basic"
+  },
+  {
+    "id": 63,
+    "category": "Smart contract",
+    "question": "ERC-20 approve/transferFrom pattern có vấn đề gì?",
+    "answer": "Race condition: spender có thể front-run thay đổi allowance. ERC-2612 (permit) cho phép approve bằng chữ ký off-chain. ERC-3009 (transferWithAuthorization) mở rộng hơn.",
+    "level": "intermediate"
+  },
+  {
+    "id": 64,
+    "category": "Smart contract",
+    "question": "Proxy pattern (Transparent/UUPS)升级 hợp đồng hoạt động ra sao?",
+    "answer": "Proxy giữ storage, delegatecall đến implementation. Admin (Transparent) hoặc implementation tự quản lý (UUPS) thay địa chỉ implementation mới. Storage layout phải giữ nguyên.",
+    "level": "advanced"
+  },
+  {
+    "id": 65,
+    "category": "Smart contract",
+    "question": "CREATE2 khác CREATE ở điểm nào?",
+    "answer": "CREATE2 dùng salt + init code hash + deployer address để tính địa chỉ trước khi deploy. Cho phép counterfactual deployment: địa chỉ xác định trước, deploy sau.",
+    "level": "intermediate"
+  },
+  {
+    "id": 66,
+    "category": "Smart contract",
+    "question": "EIP-1167 Minimal Proxy (Clone) tiết kiệm gas như thế nào?",
+    "answer": "Deploy bytecode nhỏ (~45 byte) delegatecall đến implementation cố định. Tạo nhiều instance cùng logic với chi phí deploy rất thấp so với deploy toàn bộ code.",
+    "level": "advanced"
+  },
+  {
+    "id": 67,
+    "category": "Smart contract",
+    "question": "Access control pattern: Ownable vs Role-Based (AccessControl) khác ra sao?",
+    "answer": "Ownable: một owner duy nhất, đơn giản. AccessControl (OpenZeppelin): nhiều role (MINTER_ROLE, PAUSER_ROLE), cấp/thu hồi quyền chi tiết, hỗ trợ role admin phân cấp.",
+    "level": "intermediate"
+  },
+  {
+    "id": 68,
+    "category": "Smart contract",
+    "question": "Diamond Standard (EIP-2535) giải quyết giới hạn kích thước contract ra sao?",
+    "answer": "Contract chính (diamond) delegatecall đến nhiều facet (implementation) theo selector. Mỗi facet độc lập, cho phép contract gần như vô hạn kích thước,升级 từng facet riêng lẻ.",
+    "level": "advanced"
+  },
+  {
+    "id": 69,
+    "category": "Smart contract",
+    "question": "Gas optimization: packed storage variables tiết kiệm như thế nào?",
+    "answer": "Các biến nhỏ (uint64, uint128, address, bool) đặt cạnh nhau trong cùng slot 32-byte. Solidity tự pack. Sắp xếp thứ tự khai báo đúng giảm SSTORE/SLOAD operations.",
+    "level": "intermediate"
+  },
+  {
+    "id": 70,
+    "category": "Ví & Chữ ký số",
+    "question": "MPC (Multi-Party Computation) wallet phân chia khóa như thế nào?",
+    "answer": "Private key chia thành shares phân phối cho nhiều party. Không party nào có full key. Chữ ký tạo ra bằng protocol MPC (GG20, DKLs) giữa các party. Không có single point of failure.",
+    "level": "advanced"
+  },
+  {
+    "id": 71,
+    "category": "Ví & Chữ ký số",
+    "question": "Threshold signature (TSS) khác multisig on-chain ra sao?",
+    "answer": "TSS tạo chữ ký đơn lẻ (như ECDSA/EdDSA) từ nhiều shares off-chain. On-chain chỉ thấy 1 chữ ký, tiết kiệm gas, privacy tốt hơn multisig cần verify M chữ ký riêng biệt.",
+    "level": "advanced"
+  }
+]

@@ -1,158 +1,158 @@
 [
   {
     "id": 1,
-    "category": "Khả năng mở rộng",
-    "question": "Khả năng mở rộng của chuỗi khối được cải thiện bằng những giải pháp nào?",
-    "answer": "Khả năng mở rộng được cải thiện thông qua việc tăng kích thước khối và thực hiện giao dịch off-chain, giúp giảm tải cho mạng lưới và tăng hiệu quả xử lý."
+    "category": "Mật mã học",
+    "question": "SHA-256 tạo đầu ra có độ dài bao nhiêu?",
+    "answer": "SHA-256 tạo digest 256 bit, tương đương 64 ký tự hệ thập lục phân, bất kể độ dài dữ liệu đầu vào."
   },
   {
     "id": 2,
-    "category": "Cấu trúc Block",
-    "question": "Genesis Block là gì và nó đóng vai trò gì trong hệ thống?",
-    "answer": "Genesis block là khối đầu tiên (khối khởi nguồn) trong chuỗi khối, đóng vai trò làm nền tảng để kết nối và tạo dựng toàn bộ các khối tiếp theo."
+    "category": "Mật mã học",
+    "question": "Tính chất avalanche của hàm băm là gì?",
+    "answer": "Một thay đổi rất nhỏ ở đầu vào thường làm khoảng một nửa số bit đầu ra thay đổi khó dự đoán. Đây là xu hướng xác suất, không phải bảo đảm chính xác 50% cho mọi cặp đầu vào."
   },
   {
     "id": 3,
     "category": "Mật mã học",
-    "question": "Hệ thống mật mã khóa công khai (Asymmetric Encryption) hoạt động như thế nào?",
-    "answer": "Hệ thống sử dụng một cặp bao gồm Khóa công khai (Public Key) và Khóa riêng (Private Key) để mã hóa và giải mã thông tin, tạo nền tảng bảo mật cho giao dịch."
+    "question": "Hash khác encryption ở điểm nào?",
+    "answer": "Encryption có thể giải mã bằng khóa phù hợp; hash là hàm một chiều và không có thao tác giải mã để khôi phục đầu vào ban đầu."
   },
   {
     "id": 4,
-    "category": "Tài sản số & Token",
-    "question": "Token tiện ích (Utility Token) là gì?",
-    "answer": "Token tiện ích đại diện cho quyền truy cập vào các sản phẩm hoặc dịch vụ trong hệ sinh thái. Nó không được xem là chứng khoán và không chịu sự quản lý khắt khe."
+    "category": "Mật mã học",
+    "question": "Chữ ký số dùng private key và public key như thế nào?",
+    "answer": "Người ký tạo chữ ký bằng private key. Người nhận dùng public key tương ứng để xác minh chữ ký và kiểm tra message có bị thay đổi hay không."
   },
   {
     "id": 5,
-    "category": "Hợp đồng thông minh",
-    "question": "Hợp đồng thông minh (Smart Contract) là gì?",
-    "answer": "Hợp đồng thông minh là các đoạn mã tự động thực thi trên chuỗi khối khi các điều kiện lập trình sẵn được đáp ứng. Đây là điểm vượt trội của Ethereum so với Bitcoin."
+    "category": "Mật mã học",
+    "question": "Pre-image resistance bảo vệ điều gì?",
+    "answer": "Từ một digest đã biết, rất khó tìm ra thông điệp đầu vào tạo nên digest đó; với SHA-256 không gian đầu ra có 2^256 khả năng."
   },
   {
     "id": 6,
-    "category": "Tổng quan Blockchain",
-    "question": "3 đặc điểm nền tảng chính của công nghệ chuỗi khối là gì?",
-    "answer": "Chuỗi khối có tính Minh bạch, Phi tập trung, và Bất biến (không thể sửa đổi hay xóa bỏ thông tin một khi đã được ghi nhận)."
+    "category": "Cấu trúc Block",
+    "question": "Một block blockchain thường chứa những trường nào?",
+    "answer": "Tùy giao thức, block thường có chiều cao hoặc index, timestamp, dữ liệu/giao dịch, hash của block trước và hash/header của chính nó."
   },
   {
     "id": 7,
-    "category": "Cơ chế Đồng thuận",
-    "question": "So sánh sự khác biệt cốt lõi giữa Proof of Work (PoW) và Proof of Stake (PoS)?",
-    "answer": "PoW yêu cầu thợ đào giải bài toán phức tạp gây tốn năng lượng. PoS giảm thiểu tiêu hao năng lượng bằng cách xác thực giao dịch dựa trên số lượng coin nắm giữ (Stake)."
+    "category": "Cấu trúc Block",
+    "question": "Genesis Block là gì?",
+    "answer": "Genesis Block là block đầu tiên của một blockchain. Nó không trỏ tới block trước trong cùng chain và thường được cấu hình sẵn khi khởi tạo mạng."
   },
   {
     "id": 8,
-    "category": "Mật mã học",
-    "question": "Hàm băm mật mã (Cryptographic Hash Function) có các tính chất quan trọng nào?",
-    "answer": "Có tính tất định (cùng Input luôn ra cùng Output Hash) và tính kháng va chạm (rực rỡ khó tìm được 2 Input khác nhau có cùng 1 mã Hash)."
+    "category": "Cấu trúc Block",
+    "question": "Previous Hash tạo ra liên kết chuỗi như thế nào?",
+    "answer": "Block mới lưu hash của block đứng trước. Nếu nội dung block cũ đổi, hash mới không còn khớp Previous Hash đã lưu ở block kế tiếp."
   },
   {
     "id": 9,
-    "category": "Merkle Tree",
-    "question": "Dữ liệu giao dịch được tổ chức và lưu trữ như thế nào trong cây Merkle?",
-    "answer": "Dữ liệu giao dịch gốc được lưu trữ tại các nút lá của cây Merkle, đảm bảo tính toàn vẹn và không thể thay đổi, giúp tối ưu hiệu suất kiểm tra."
+    "category": "Cấu trúc Block",
+    "question": "Nonce được dùng làm gì trong Proof of Work?",
+    "answer": "Miner thay đổi nonce để tạo nhiều block hash khác nhau cho đến khi tìm được hash thỏa điều kiện độ khó của mạng."
   },
   {
     "id": 10,
-    "category": "Ethereum & DApp",
-    "question": "Ethereum Virtual Machine (EVM) là gì?",
-    "answer": "EVM (Máy ảo Ethereum) là môi trường hoàn chỉnh để thực thi các hợp đồng thông minh và giao dịch, cung cấp nền tảng chạy ứng dụng phi tập trung (DApp)."
+    "category": "Cấu trúc Block",
+    "question": "Timestamp ISO 8601 và Unix Epoch biểu diễn thời gian ra sao?",
+    "answer": "ISO 8601 là chuỗi ngày giờ chuẩn, ví dụ 2026-09-26T10:20:30.000Z. Unix Epoch là số mili giây hoặc giây tính từ 1970-01-01 UTC."
   },
   {
     "id": 11,
-    "category": "Cơ chế Đồng thuận",
-    "question": "Giao thức đồng thuận (Consensus Protocol) có vai trò gì trong mạng lưới?",
-    "answer": "Là cơ chế để tất cả các nút trong mạng P2P đồng ý về trạng thái duy nhất của chuỗi khối (Bitcoin dùng PoW, Ethereum dùng PoS)."
+    "category": "Cấu trúc Block",
+    "question": "Merkle Root trong header block đại diện cho điều gì?",
+    "answer": "Merkle Root là hash gốc tóm tắt các transaction trong block; thay đổi một transaction sẽ làm thay đổi leaf hash và các node cha trên nhánh tương ứng."
   },
   {
     "id": 12,
-    "category": "Enterprise Blockchain",
-    "question": "Hyperledger là gì và hướng tới đối tượng nào?",
-    "answer": "Hyperledger là nền tảng dành cho các chuỗi khối cấp phép (Permissioned Blockchain) phù hợp với doanh nghiệp, đòi hỏi bảo mật cao và kiểm soát tốt."
+    "category": "Ethereum & DApp",
+    "question": "EVM là gì?",
+    "answer": "Ethereum Virtual Machine là môi trường thực thi bytecode của smart contract trên các node Ethereum theo quy tắc xác định."
   },
   {
     "id": 13,
     "category": "Ethereum & DApp",
-    "question": "Khái niệm GAS trong mạng Ethereum dùng để làm gì?",
-    "answer": "GAS là đơn vị đo lường chi phí tính toán khi thực thi giao dịch/Smart Contract, giúp tối ưu hóa tài nguyên mạng và ngăn chặn các cuộc tấn công lạm dụng (Spam)."
+    "question": "Gas trong Ethereum đo lường điều gì?",
+    "answer": "Gas đo lượng công việc tính toán cần để thực hiện transaction hoặc smart contract. Phí thực trả phụ thuộc gas sử dụng và giá gas."
   },
   {
     "id": 14,
     "category": "Ethereum & DApp",
-    "question": "DApp (Decentralized Application) là gì và thường được viết bằng ngôn ngữ nào?",
-    "answer": "DApp là ứng dụng phi tập trung chạy trên chuỗi khối thông qua Smart Contract, thường được phát triển bằng ngôn ngữ Solidity trên Ethereum."
+    "question": "DApp khác ứng dụng web tập trung ở đâu?",
+    "answer": "DApp thường kết hợp giao diện client với smart contract hoặc dịch vụ phi tập trung; dữ liệu và logic quan trọng có thể được xác minh trên blockchain."
   },
   {
     "id": 15,
-    "category": "Lịch sử & Nền tảng",
-    "question": "Ai là người sáng lập ra mạng lưới Ethereum?",
-    "answer": "Vitalik Buterin là người sáng lập Ethereum, mở rộng khả năng của chuỗi khối từ thanh toán đơn thuần thành nền tảng hỗ trợ Smart Contract và DApp."
+    "category": "Ethereum & DApp",
+    "question": "Smart contract là gì?",
+    "answer": "Smart contract là chương trình được triển khai trên blockchain và thực thi theo quy tắc của nền tảng khi nhận transaction phù hợp."
   },
   {
     "id": 16,
-    "category": "Bảo mật Blockchain",
-    "question": "Tại sao cấu trúc phân tán lại giúp Blockchain đạt độ bảo mật cao?",
-    "answer": "Dữ liệu được sao lưu đồng bộ tại nhiều nút phân tán kết hợp với thuật toán mã hóa mạnh mẽ, giúp hệ thống chống lại các điểm lỗi tập trung và cuộc tấn công sửa đổi."
+    "category": "Ethereum & DApp",
+    "question": "Wei là đơn vị gì?",
+    "answer": "Wei là đơn vị nhỏ nhất thường dùng để biểu diễn ETH. 1 ETH bằng 10^18 Wei."
   },
   {
     "id": 17,
-    "category": "Tài sản số & Token",
-    "question": "Token mã hóa (Cryptographic Token) bao gồm những loại phổ biến nào?",
-    "answer": "Token đại diện cho giá trị lưu trữ trên chuỗi khối, phân thành các loại như Token tiện ích (Utility), Token chứng khoán (Security), và Token thanh toán (Payment)."
+    "category": "Ethereum & DApp",
+    "question": "Private key của ví Ethereum cần được bảo vệ thế nào?",
+    "answer": "Private key phải được giữ bí mật và bảo vệ an toàn. Ai kiểm soát private key có thể ký transaction cho địa chỉ tương ứng."
   },
   {
     "id": 18,
-    "category": "Ứng dụng Thực tế",
-    "question": "Blockchain có tiềm năng ứng dụng vào các lĩnh vực nào tại Việt Nam?",
-    "answer": "Quản lý chuỗi cung ứng, chuyển đổi số dịch vụ công chính phủ, quản lý dữ liệu dân cư, và tài chính số minh bạch."
+    "category": "Đồng thuận PoS",
+    "question": "Proof of Work chọn miner thắng như thế nào?",
+    "answer": "Các miner thử nhiều nonce để tìm hash thỏa difficulty target; mạng chấp nhận block hợp lệ theo quy tắc đồng thuận."
   },
   {
     "id": 19,
-    "category": "Tổng quan Blockchain",
-    "question": "Sự khác biệt cốt lõi về mục tiêu giữa Bitcoin và Ethereum là gì?",
-    "answer": "Bitcoin tập trung vào hệ thống tiền mã hóa và giao dịch ngang hàng (P2P Payment), còn Ethereum mở rộng thành một máy tính toàn cầu hỗ trợ Smart Contract và DApp."
+    "category": "Đồng thuận PoS",
+    "question": "Proof of Stake dùng stake trong lựa chọn validator ra sao?",
+    "answer": "Stake có thể làm trọng số lựa chọn validator lớn hơn, nhưng thuật toán cụ thể còn phụ thuộc giao thức và tính ngẫu nhiên của mạng."
   },
   {
     "id": 20,
-    "category": "Cơ chế Đồng thuận",
-    "question": "Thợ đào trong cơ chế Proof of Work (PoW) của Bitcoin làm nhiệm vụ gì?",
-    "answer": "Thợ đào dùng năng lượng phần cứng để giải các bài toán mật mã phức tạp nhằm xác thực giao dịch và đóng đóng khối mới vào chuỗi."
+    "category": "Đồng thuận PoS",
+    "question": "Ethereum PoS chia thời gian thành slot và epoch như thế nào?",
+    "answer": "Ethereum mainnet định nghĩa slot khoảng 12 giây và một epoch gồm 32 slot. Các giá trị trong simulator chỉ mô phỏng khái niệm này."
   },
   {
     "id": 21,
-    "category": "Ứng dụng Thực tế",
-    "question": "Sự kết hợp giữa Trí tuệ nhân tạo (AI) và Blockchain mang lại lợi ích gì?",
-    "answer": "Blockchain giúp nâng cao tính minh bạch, khả năng truy xuất nguồn gốc dữ liệu và tính an toàn cho các mô hình AI trong nền kinh tế dữ liệu."
+    "category": "Đồng thuận PoS",
+    "question": "Block proposer và attester có vai trò gì?",
+    "answer": "Proposer đề xuất block cho slot. Attesters kiểm tra chain head/block và gửi vote theo quy tắc của giao thức."
   },
   {
     "id": 22,
-    "category": "Enterprise Blockchain",
-    "question": "Smart Contract trong doanh nghiệp Hyperledger được gọi là gì?",
-    "answer": "Trong Hyperledger, hợp đồng thông minh được gọi là Chaincode, giúp tự động hóa quy trình giao dịch trong các mạng doanh nghiệp cấp phép."
+    "category": "Đồng thuận PoS",
+    "question": "Slashing xử lý hành vi double-sign như thế nào?",
+    "answer": "Giao thức có thể phạt stake và loại validator vi phạm khỏi hoạt động. Cách phạt thực tế phụ thuộc điều kiện và quy tắc của mạng."
   },
   {
     "id": 23,
-    "category": "Cấu trúc Block",
-    "question": "Ý nghĩa lịch sử và kỹ thuật của Genesis Block?",
-    "answer": "Là khối đánh số Index 0, khởi nguồn cho toàn bộ lịch sử giao dịch của chuỗi khối. Mọi khối về sau đều liên kết nối tiếp xuất phát từ khối này."
+    "category": "Đồng thuận PoS",
+    "question": "RANDAO góp phần gì vào lựa chọn validator?",
+    "answer": "Trong Ethereum, các reveal của proposer góp vào randomness mix dùng cho một số lựa chọn giao thức; đây không đơn giản là lấy stake nhân Math.random."
   },
   {
     "id": 24,
-    "category": "Tài sản số & Token",
-    "question": "Tài sản mã hóa (Digital Asset) bao gồm những hình thức nào?",
-    "answer": "Là bất kỳ giá trị nào lưu trữ trên chuỗi khối, bao gồm Tiền mã hóa (Cryptocurrency), Token tiện ích/chứng khoán, và các loại hàng hóa mã hóa (NFT)."
+    "category": "Tài sản số",
+    "question": "Utility Token thường được dùng để làm gì?",
+    "answer": "Utility Token cung cấp quyền truy cập hoặc chức năng trong một sản phẩm/dịch vụ, ví dụ thanh toán phí hoặc sử dụng tính năng của hệ thống."
   },
   {
     "id": 25,
-    "category": "Tổng quan Blockchain",
-    "question": "Thế nào là đặc tính Phi tập trung (Decentralization)?",
-    "answer": "Không có một máy chủ hay cơ quan kiểm soát trung tâm. Tất cả các nút (Nodes) trong mạng lưới có quyền hạn bình đẳng và đạt sự đồng thuận chung."
+    "category": "Tài sản số",
+    "question": "ERC-20 mô tả loại tài sản nào?",
+    "answer": "ERC-20 là tiêu chuẩn interface phổ biến cho fungible token trên Ethereum; các token cùng hợp đồng có thể thay thế lẫn nhau theo đơn vị."
   },
   {
     "id": 26,
-    "category": "Ethereum & DApp",
-    "question": "Đơn vị nhỏ nhất của tiền mã hóa Ether (ETH) là gì và bằng bao nhiêu Ether?",
-    "answer": "Đơn vị nhỏ nhất của Ether là Wei. 1 Ether = 10^18 Wei (1.000.000.000.000.000.000 Wei), giúp xử lý các vi giao dịch cực nhỏ."
+    "category": "Tài sản số",
+    "question": "ERC-721 và NFT có đặc điểm gì?",
+    "answer": "ERC-721 là tiêu chuẩn cho token không thể thay thế, mỗi token ID đại diện một tài sản riêng có trạng thái sở hữu riêng."
   }
 ]

@@ -1,0 +1,107 @@
+[
+  {
+    "id": 42,
+    "category": "Ví & Chữ ký số",
+    "question": "Account Abstraction (ERC-4337) thay đổi mô hình tài khoản như thế nào?",
+    "answer": "Tách logic xác thực khỏi EOA. UserOperation gửi vào mempool thay vì transaction, cho phép smart contract wallet tự định nghĩa logic ký, gasless, social recovery.",
+    "level": "advanced"
+  },
+  {
+    "id": 43,
+    "category": "Ví & Chữ ký số",
+    "question": "Passkey/WebAuthn tích hợp vào ví blockchain ra sao?",
+    "answer": "Dùng Secure Enclave/TPM của thiết bị tạo cặp khóa. Relying party (wallet) xác minh chữ ký WebAuthn qua smart contract (ERC-4337) hoặc precompile RIP-7212.",
+    "level": "advanced"
+  },
+  {
+    "id": 44,
+    "category": "Ví & Chữ ký số",
+    "question": "EIP-3074 AUTH/AUTHCALL cho phép EOA delegate quyền ký như thế nào?",
+    "answer": "AUTH thiết lập authorized invoker, AUTHCALL thực thi call trong context invoker. Cho phép sponsored transaction, batch, gasless cho EOA không cần smart contract wallet. Cần EIP-7702 để nâng cấp EOA.",
+    "level": "advanced"
+  },
+  {
+    "id": 45,
+    "category": "Ví & Chữ ký số",
+    "question": "EIP-7702 (EOA code) nâng cấp EOA thành smart contract wallet ra sao?",
+    "answer": "EOA set code field trỏ đến implementation contract. Giữ nguyên nonce, balance, address. Kết hợp EIP-3074 cho sponsored tx. Đơn giản hóa onboarding so với deploy mới contract wallet.",
+    "level": "advanced"
+  },
+  {
+    "id": 46,
+    "category": "Ethereum & DApp",
+    "question": "Solidity function visibility: public, external, internal, private khác nhau ra sao?",
+    "answer": "public: gọi được ở đâu, tạo getter cho state var. external: chỉ gọi từ ngoài, calldata. internal: trong contract và kế thừa. private: chỉ trong contract định nghĩa.",
+    "level": "basic"
+  },
+  {
+    "id": 47,
+    "category": "Ethereum & DApp",
+    "question": "Storage vs memory vs calldata trong Solidity dùng khi nào?",
+    "answer": "Storage: biến trạng thái bền vững (đắt). Memory: biến tạm trong function (rẻ hơn). Calldata: read-only tham số external function (rẻ nhất, không copy).",
+    "level": "intermediate"
+  },
+  {
+    "id": 48,
+    "category": "Ethereum & DApp",
+    "question": "Event trong Solidity lưu trữ và truy xuất như thế nào?",
+    "answer": "Event ghi vào transaction receipt (logs), không thể đọc on-chain. Off-chain dùng eth_getLogs/filter để lọc theo indexed topics (tối đa 3).",
+    "level": "intermediate"
+  },
+  {
+    "id": 49,
+    "category": "Ethereum & DApp",
+    "question": "Delegatecall khác call thường ở điểm nào?",
+    "answer": "Delegatecall thực thi code của contract đích nhưng trong context (storage, msg.sender, msg.value) của contract gọi. Dùng cho proxy pattern升级.",
+    "level": "advanced"
+  },
+  {
+    "id": 50,
+    "category": "Merkle & Mining",
+    "question": "Merkle tree xây dựng từ các leaf hash như thế nào?",
+    "answer": "Hash từng cặp node con liên tiếp để tạo node cha, lặp lại cho đến gốc. Số leaf lẻ thì duplicate leaf cuối. Root hash tóm tắt toàn bộ dữ liệu.",
+    "level": "basic"
+  },
+  {
+    "id": 51,
+    "category": "Merkle & Mining",
+    "question": "Merkle proof (Merkle path) chứa thông tin gì?",
+    "answer": "Chứa các sibling hash trên đường từ leaf đến root. Verifier hash leaf với sibling lần lượt để tính root, so sánh với root đã biết.",
+    "level": "intermediate"
+  },
+  {
+    "id": 52,
+    "category": "Merkle & Mining",
+    "question": "Proof of Work difficulty target điều chỉnh như thế nào?",
+    "answer": "Bitcoin: mỗi 2016 block (~2 tuần) điều chỉnh target sao cho block time trung bình ~10 phút. Ethereum (pre-merge): độ khó điều chỉnh mỗi block dựa trên timestamp cha.",
+    "level": "basic"
+  },
+  {
+    "id": 53,
+    "category": "Merkle & Mining",
+    "question": "Mining pool chia sẻ phần thưởng theo scheme nào?",
+    "answer": "PPS (Pay Per Share): trả cố định mỗi share hợp lệ. PPLNS (Pay Per Last N Shares): chia theo share trong N share gần nhất khi tìm được block, giảm variance cho pool.",
+    "level": "intermediate"
+  },
+  {
+    "id": 54,
+    "category": "Merkle & Mining",
+    "question": "Selfish mining attack tận dụng điểm yếu gì của PoW?",
+    "answer": "Miner giấu block tìm được, khai thác riêng chain riêng. Khi chain chính tiến gần, công bố block riêng để invalid block đối thủ, lãng phí hash rate của network.",
+    "level": "advanced"
+  },
+  {
+    "id": 55,
+    "category": "Merkle & Mining",
+    "question": "Stratum V2 cải tiến protocol mining pool ra sao?",
+    "answer": "Miner tự xây block template (Job Declaration), mã hóa traffic, giảm latency. Loại bỏ khả năng pool censorship transaction so với Stratum V1.",
+    "level": "advanced"
+  },
+  {
+    "id": 56,
+    "category": "Merkle & Mining",
+    "question": "ASIC resistance trong thuật toán mining đạt được như thế nào?",
+    "answer": "Thiết kế thuật toán tốn memory lớn (Ethash, RandomX) hoặc thay đổi thường xuyên (ProgPoW) để GPU/CPU cạnh tranh, nhưng ASIC thường vẫn tối ưu hóa được dần.",
+    "level": "intermediate"
+  }
+]

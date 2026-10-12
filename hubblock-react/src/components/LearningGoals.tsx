@@ -148,9 +148,7 @@ export default function LearningGoals() {
                         {isOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                         {isOpen ? t('hideHint') : t('showHint')}
                       </button>
-                      <div className="mt-2 ml-5 rounded-md border border-amber-300/20 bg-amber-300/[0.05] p-2.5 text-[8px] leading-5 text-amber-200/90">
-                        {item.hint}
-                      </div>
+                      {isOpen && <div className="mt-2 ml-5 rounded-md border border-amber-300/20 bg-amber-300/[0.05] p-2.5 text-[8px] leading-5 text-amber-200/90">{item.hint}</div>}
                     </div>
                   )}
                 </div>

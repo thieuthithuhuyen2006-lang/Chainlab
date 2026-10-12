@@ -1,0 +1,107 @@
+[
+  {
+    "id": 72,
+    "category": "Tài sản số",
+    "question": "ERC-1155 multi-token standard khác ERC-20/721 ra sao?",
+    "answer": "Một contract quản lý nhiều loại token (fungible, non-fungible, semi-fungible) bằng ID. balanceOf(account, id). Batch transfer, approve cho operator. Phù hợp game, NFT collection.",
+    "level": "basic"
+  },
+  {
+    "id": 73,
+    "category": "Tài sản số",
+    "question": "ERC-721A (Azuki) tối ưu mint gas như thế nào?",
+    "answer": "Chỉ cập nhật owner của token ID đầu tiên trong batch, dùng implicit ownership cho các ID liên tiếp. Mint N token tốn gas gần bằng mint 1 token.",
+    "level": "intermediate"
+  },
+  {
+    "id": 74,
+    "category": "Tài sản số",
+    "question": "Soulbound Token (SBT, EIP-5114) đặc điểm gì?",
+    "answer": "Non-transferable NFT gắn liền với identity (soul). Dùng cho credential, reputation, membership. Không thể bán/cho vay, chỉ issuer có thể revoke.",
+    "level": "intermediate"
+  },
+  {
+    "id": 75,
+    "category": "Tài sản số",
+    "question": "ERC-3525 Semi-Fungible Token (SFT) mô hình hóa tài sản nào?",
+    "answer": "Token có ID (như NFT) nhưng có value có thể split/merge (như ERC-20). Dùng cho bond, invoice, carbon credit: cùng class (ID) nhưng value khác nhau, có thể gộp/tách.",
+    "level": "advanced"
+  },
+  {
+    "id": 76,
+    "category": "Tài sản số",
+    "question": "Tokenomics: vesting, cliff, unlock schedule thiết kế ra sao?",
+    "answer": "Cliff: thời gian khóa ban đầu (ví dụ 12 tháng). Sau cliff, token unlock tuyến tính (linear vesting) hoặc theo milestone. Smart contract vesting (Streaming, Sablier) tự động release theo thời gian.",
+    "level": "intermediate"
+  },
+  {
+    "id": 77,
+    "category": "Tài sản số",
+    "question": "Stablecoin algorithmic (algo-stable) duy trì peg như thế nào?",
+    "answer": "Không reserve asset. Dùng cơ chế mint/burn token phụ (seigniorage shares) hoặc rebasing supply (AMPL). Rủi ro death spiral khi niềm tin sụp đổ (ví dụ UST/LUNA).",
+    "level": "advanced"
+  },
+  {
+    "id": 78,
+    "category": "Tài sản số",
+    "question": "ERC-4626 Tokenized Vault standard hóa yield-bearing token ra sao?",
+    "answer": "Interface thống nhất cho vault: deposit/withdraw trả shares tỷ lệ với assets. Share price chỉ tăng. Cho phép composability: vault của vault, leveraged farming, aggregator.",
+    "level": "advanced"
+  },
+  {
+    "id": 79,
+    "category": "Bảo mật & Tấn công",
+    "question": "51% attack trên PoW và PoS khác nhau ra sao?",
+    "answer": "PoW: kiểm soát >50% hash rate, double-spend, censor tx. PoS: cần >50% stake (rất đắt), slashing làm mất stake, social consensus có thể fork loại bỏ attacker.",
+    "level": "basic"
+  },
+  {
+    "id": 80,
+    "category": "Bảo mật & Tấn công",
+    "question": "Sybil attack trong mạng P2P và consensus được ngăn chặn như thế nào?",
+    "answer": "PoW: chi phí hash rate. PoS: stake kinh tế. P2P: reputation, identity (PoP), resource testing. Không loại bỏ hoàn toàn nhưng tăng chi phí tấn công.",
+    "level": "intermediate"
+  },
+  {
+    "id": 81,
+    "category": "Bảo mật & Tấn công",
+    "question": "Eclipse attack tách nút khỏi network như thế nào?",
+    "answer": "Kẻ tấn công kiểm soát tất cả peer connections của victim (điền peer table bằng IP attacker). Victim chỉ thấy chain attacker tạo. Phòng: diverse peer selection, anchor connections.",
+    "level": "advanced"
+  },
+  {
+    "id": 82,
+    "category": "Bảo mật & Tấn công",
+    "question": "Front-running, back-running, sandwich attack trên DEX khác nhau ra sao?",
+    "answer": "Front-run: đặt tx trước victim (gas cao hơn). Back-run: đặt tx sau victim (arb/liquidation). Sandwich: front-run buy + back-run sell, bóp victim ở giữa. MEV bot thực hiện tự động.",
+    "level": "intermediate"
+  },
+  {
+    "id": 83,
+    "category": "Bảo mật & Tấn công",
+    "question": "Flash loan cho phép vay không collateral như thế nào?",
+    "answer": "Vay và trả trong cùng một transaction. Nếu không trả đủ, toàn bộ transaction revert. Dùng cho arbitrage, liquidation, governance attack. Không rủi ro cho lender.",
+    "level": "intermediate"
+  },
+  {
+    "id": 84,
+    "category": "Bảo mật & Tấn công",
+    "question": "Reentrancy guard (OpenZeppelin) triển khai như thế nào?",
+    "answer": "State variable _status (1 = entered, 2 = exited). NonReentrant modifier kiểm tra _status != 1, set _status = 1, sau call set _status = 2. Transient storage (EIP-1153) tiết kiệm gas hơn.",
+    "level": "advanced"
+  },
+  {
+    "id": 85,
+    "category": "Bảo mật & Tấn công",
+    "question": "Oracle manipulation (price oracle attack) thực hiện như thế nào?",
+    "answer": "Kẻ tấn công thao túng giá trên DEX (spot price) hoặc thao túng medianizer. Protocol dùng giá này cho liquidation/mint → bad debt. Phòng: TWAP, multiple sources, Chainlink, delay.",
+    "level": "advanced"
+  },
+  {
+    "id": 86,
+    "category": "Blockchain trong tài chính ngân hàng",
+    "question": "Central Bank Digital Currency (CBDC) khác stablecoin private ra sao?",
+    "answer": "CBDC: liability của central bank, legal tender, centralized ledger (hoặc hybrid). Stablecoin: liability của private issuer, backed by reserve, chạy trên public/permissioned chain.",
+    "level": "basic"
+  }
+]

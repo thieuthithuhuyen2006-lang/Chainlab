@@ -159,8 +159,8 @@ export default function RealityCheck() {
   const t = (key: TranslationKey) => translations[language][key]
   const [openSections, setOpenSections] = useState<string[]>([])
 
-  const toggle = (id: string) => {
-    setOpenSections((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  const sync = (id: string, open: boolean) => {
+    setOpenSections((prev) => (open ? (prev.includes(id) ? prev : [...prev, id]) : prev.filter((x) => x !== id)))
   }
 
   const content = realityChecks[language === 'VN' ? 'vn' : 'en']
@@ -191,7 +191,7 @@ export default function RealityCheck() {
           const isOpen = openSections.includes(section.id)
           const Icon = section.icon
           return (
-            <details key={section.id} open={isOpen} onToggle={() => toggle(section.id)} className="py-3">
+            <details key={section.id} open={isOpen} onToggle={(event) => sync(section.id, event.currentTarget.open)} className="py-3">
               <summary className="flex items-center gap-3 cursor-pointer list-none">
                 <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-slate-700 bg-slate-800/50 text-slate-300">
                   <Icon size={15} />
