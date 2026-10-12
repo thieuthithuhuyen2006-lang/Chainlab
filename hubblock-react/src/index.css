@@ -76,9 +76,13 @@ button { cursor: pointer; }
 @keyframes hub-merkle-alert { 0%, 100% { box-shadow: 0 0 0 0 rgb(251 113 133 / 0.05); border-color: rgb(251 113 133 / 0.45); } 50% { box-shadow: 0 0 16px 2px rgb(251 113 133 / 0.30); border-color: rgb(251 113 133 / 0.85); } }
 .hub-merkle-root { animation: hub-merkle-root 2.6s ease-in-out infinite; }
 .hub-merkle-alert { animation: hub-merkle-alert 1.2s ease-in-out infinite; }
+@keyframes hub-chain-link { 0%, 100% { opacity: 0.28; } 50% { opacity: 1; } }
+.hub-chain-link { animation: hub-chain-link 2.4s ease-in-out infinite; }
+.hub-chain-link:nth-of-type(2n) { animation-delay: 0.35s; }
+.hub-chain-link:nth-of-type(3n) { animation-delay: 0.7s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hub-aura, .hub-rise, .hub-pulse-dot, .hub-merkle-root, .hub-merkle-alert { animation: none; }
+  .hub-aura, .hub-rise, .hub-pulse-dot, .hub-merkle-root, .hub-merkle-alert, .hub-chain-link { animation: none; }
   .hub-lift:hover { transform: none; }
 }
 .mining-workbench :is(p, span, label, dt, dd, button, th, td, summary) { font-size: max(13px, 1em); }
