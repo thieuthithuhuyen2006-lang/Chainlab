@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { AlertTriangle, ArrowRight, Check, Copy, Eye, EyeOff, Fingerprint, KeyRound, LockKeyhole, RefreshCw, ShieldCheck, ShieldX, WalletCards } from 'lucide-react'
 import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
@@ -189,6 +189,14 @@ export default function TabSignatureMerkle() {
   const [verification, setVerification] = useState<boolean | null>(null)
   const [error, setError] = useState<Status | null>(null)
   const [transactions, setTransactions] = useState(initialTransactions)
+  const reducedMotion = useReducedMotion()
+  const [sealSeed, setSealSeed] = useState(0)
+  const [sealing, setSealing] = useState(false)
+  useEffect(() => {
+    if (!sealing) return
+    const timer = window.setTimeout(() => setSealing(false), 900)
+    return () => window.clearTimeout(timer)
+  }, [sealing, sealSeed])
   const payload = hashTransaction({ from: sender, to: receiver, amount })
 
   async function handleCreateWallet() {
@@ -224,6 +232,8 @@ export default function TabSignatureMerkle() {
       setVerifyMessage(payload)
       setVerifyPublicKey(wallet.publicKeyHex)
       setVerifySignature(bufferToHex(signature))
+      setSealSeed((value) => value + 1)
+      setSealing(true)
       playSound('transaction')
     } catch {
       playSound('error')
@@ -287,9 +297,9 @@ export default function TabSignatureMerkle() {
             <InputField label={b('Số tiền', 'Amount')} value={amount} onChange={(value) => { setAmount(value); setVerification(null) }} placeholder="12.50 ETH" />
             <div className="flex items-end"><span className="mb-2 inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-slate-500"><ShieldCheck size={12} className="text-emerald-300" />{b('Payload ký bằng SHA-256', 'SHA-256 signed payload')}</span></div>
           </div>
-          <div className="mt-4 rounded-xl border border-slate-800 bg-[#0b0f19]/70 p-3"><span className="mb-1.5 block font-mono text-[8px] uppercase tracking-[0.1em] text-slate-600">Canonical transaction SHA-256 · signed payload</span><code className="block break-all font-mono text-[10px] leading-5 text-slate-300">{payload}</code></div>
+          <div className="relative mt-4 overflow-hidden rounded-xl border border-slate-800 bg-[#0b0f19]/70 p-3"><span className="mb-1.5 block font-mono text-[8px] uppercase tracking-[0.1em] text-slate-600">Canonical transaction SHA-256 · signed payload</span><code className={`block break-all font-mono text-[10px] leading-5 text-slate-300 ${signing && !reducedMotion ? 'hub-pulse-dot' : ''}`}>{payload}</code>{sealing && !reducedMotion && <motion.i key={sealSeed} aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-1/3" style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgba(125,211,252,0.30), transparent)' }} initial={{ x: '-110%' }} animate={{ x: '340%' }} transition={{ duration: 0.85, ease: 'easeInOut' }} />}</div>
           <button type="button" onClick={handleSignTransaction} disabled={!wallet || signing} className="mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-sky-300/25 bg-sky-300/[0.1] px-4 py-2.5 text-xs font-semibold text-sky-100 transition hover:border-sky-300/45 hover:bg-sky-300/[0.15] disabled:cursor-not-allowed disabled:opacity-45">{signing ? <RefreshCw size={14} className="animate-spin" /> : <Fingerprint size={14} />}{signing ? b('Đang ký giao dịch...', 'Signing transaction...') : b('Ký giao dịch', 'Sign transaction')}</button>
-          {verifySignature && <div className="mt-4 rounded-xl border border-sky-300/15 bg-sky-300/[0.035] p-3"><div className="mb-2 flex items-center justify-between gap-2"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-sky-200/80">Digital Signature · Hex</span><CopyButton value={verifySignature} label="digital signature" /></div><code className="block max-h-20 overflow-auto break-all font-mono text-[9px] leading-4 text-slate-300">{verifySignature}</code></div>}
+          <AnimatePresence>{verifySignature && <motion.div key="digital-signature" initial={reducedMotion ? false : { opacity: 0, y: 18, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: -10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 250, damping: 21 }} className="mt-4 overflow-hidden rounded-xl border border-sky-300/15 bg-sky-300/[0.035] p-3"><div className="mb-2 flex items-center justify-between gap-2"><span className="inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-sky-200/80"><motion.span initial={reducedMotion ? false : { scale: 0.3, rotate: -18 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.18, type: 'spring', stiffness: 300, damping: 14 }} className="inline-flex"><Fingerprint size={12} className="text-sky-300" /></motion.span>Digital Signature · Hex</span><CopyButton value={verifySignature} label="digital signature" /></div><code className="block max-h-20 overflow-auto break-all font-mono text-[9px] leading-4 text-slate-300">{verifySignature}</code></motion.div>}</AnimatePresence>
         </section>
       </div>
 
@@ -303,9 +313,9 @@ export default function TabSignatureMerkle() {
         </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
           <button type="button" onClick={handleVerifySignature} disabled={verifying} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.09] px-5 py-2.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.14] disabled:cursor-wait disabled:opacity-65">{verifying ? <RefreshCw size={14} className="animate-spin" /> : <ShieldCheck size={14} />}{verifying ? b('Đang xác thực...', 'Verifying...') : 'Verify signature'}</button>
-          {verification !== null && <div role="status" className={`flex min-h-10 items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-semibold ${verification ? 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-200' : 'border-rose-400/25 bg-rose-400/[0.08] text-rose-200'}`}>{verification ? <Check size={14} /> : <ShieldX size={14} />}{verification ? b('Giao dịch chính chủ & nguyên vẹn', 'Authentic signature & intact data') : b('Cảnh báo: dữ liệu bị can thiệp hoặc sai key', 'Warning: data was tampered with or the key is wrong')}</div>}
+          <AnimatePresence>{verification !== null && <motion.div role="status" key={verification ? 'signature-valid' : 'signature-invalid'} initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={reducedMotion ? undefined : verification ? { opacity: 1, y: 0, scale: [0.96, 1.04, 1] } : { opacity: 1, y: 0, x: [0, -9, 9, -7, 7, -4, 4, 0] }} transition={reducedMotion ? undefined : verification ? { duration: 0.45 } : { duration: 0.6 }} exit={reducedMotion ? undefined : { opacity: 0 }} className={`flex min-h-10 items-center gap-2 rounded-lg border px-3 py-2 text-[11px] font-semibold ${verification ? 'border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-200' : 'border-rose-400/25 bg-rose-400/[0.08] text-rose-200'}`}>{verification ? <Check size={14} /> : <ShieldX size={14} />}{verification ? b('Giao dịch chính chủ & nguyên vẹn', 'Authentic signature & intact data') : b('Cảnh báo: dữ liệu bị can thiệp hoặc sai key', 'Warning: data was tampered with or the key is wrong')}</motion.div>}</AnimatePresence>
         </div>
-        {error && <p role="alert" className="mt-3 flex items-center gap-2 text-[10px] text-rose-300"><AlertTriangle size={13} />{language === 'VN' ? error.vi : error.en}</p>}
+        <AnimatePresence>{error && <motion.p role="alert" key={error.vi} initial={reducedMotion ? false : { opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0 }} transition={{ duration: 0.28 }} className="mt-3 flex items-center gap-2 text-[10px] text-rose-300"><AlertTriangle size={13} />{language === 'VN' ? error.vi : error.en}</motion.p>}</AnimatePresence>
       </section>
 
       <MerkleGraph transactions={transactions} onTransactionChange={updateTransaction} />
