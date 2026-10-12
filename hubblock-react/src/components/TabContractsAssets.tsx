@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Blocks, Check, Coins, FileCode2, Flame, Gem, Plus, ShieldCheck, WalletCards } from 'lucide-react'
+import RealityCheck from './RealityCheck'
+import LearningGoals from './LearningGoals'
 
 type Account = {
   id: string
@@ -175,6 +177,8 @@ export default function TabContractsAssets() {
         <header className="flex items-center justify-between border-b border-slate-800 px-5 py-3"><div><h3 className="text-[10px] font-semibold text-slate-200">Contract event log</h3><p className="mt-1 font-mono text-[8px] text-slate-600">Local simulated state transitions</p></div><ShieldCheck size={14} className="text-emerald-300" /></header>
         <div className="max-h-32 space-y-1 overflow-y-auto px-5 py-3">{events.map((event, index) => <p key={`${index}-${event}`} className="font-mono text-[8px] leading-4 text-slate-500">{event}</p>)}</div>
       </section>
+      <RealityCheck />
+      <LearningGoals />
     </div>
   )
 }

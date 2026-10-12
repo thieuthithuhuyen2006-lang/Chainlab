@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { BookOpenCheck, Blocks, FileKey2, Fingerprint, Home, Info, Moon, Network, Sun, UsersRound } from 'lucide-react'
+import { BookOpenCheck, Blocks, FileKey2, Fingerprint, GraduationCap, Home, Info, Moon, Network, Sun, UsersRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import hubLogo from './assets/hub-logo.png'
 import { useLanguage } from './lib/useLanguage'
 import { translations } from './lib/i18n'
 
-export type ModuleId = 'home' | 'hash' | 'mining' | 'rsa' | 'flashcards' | 'project' | 'team'
+export type ModuleId = 'home' | 'hash' | 'mining' | 'rsa' | 'flashcards' | 'project' | 'team' | 'advanced'
 
 type TabDefinition = { id: ModuleId; labelKey: keyof typeof translations.VN; icon: LucideIcon }
 type NavbarProps = { activeTab: ModuleId; onTabChange: (tab: ModuleId) => void; onProjectInfo: () => void }
@@ -18,6 +18,7 @@ const tabs: TabDefinition[] = [
   { id: 'flashcards', labelKey: 'tabFlashcards', icon: BookOpenCheck },
   { id: 'project', labelKey: 'tabProject', icon: Network },
   { id: 'team', labelKey: 'tabTeam', icon: UsersRound },
+  { id: 'advanced', labelKey: 'tabAdvanced', icon: GraduationCap },
 ]
 
 export default function Navbar({ activeTab, onTabChange, onProjectInfo }: NavbarProps) {

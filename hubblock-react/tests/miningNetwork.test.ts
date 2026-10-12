@@ -23,10 +23,12 @@ test('fork resolution chooses the longest chain and keeps the first on ties', ()
 test('peer validation rejects malformed blocks and invalid transaction signatures', () => {
   const chain = createInitialChain(0)
   const transaction: Transaction = { id: 'peer-tx', from: chain[0].transactions[0].from, to: chain[0].transactions[0].to, amount: '0.5', signatureStatus: 'signed' }
+  const lastBlock = chain.at(-1)!
+  const validTimestamp = new Date(new Date(lastBlock.timestamp).getTime() + 1000).toISOString()
   const candidate: Block = {
     index: chain.length,
-    timestamp: new Date(0).toISOString(),
-    previousHash: chain.at(-1)!.hash,
+    timestamp: validTimestamp,
+    previousHash: lastBlock.hash,
     transactions: [transaction],
     merkleRoot: merkleRoot([hashTransaction(transaction)]),
     difficulty: 0,

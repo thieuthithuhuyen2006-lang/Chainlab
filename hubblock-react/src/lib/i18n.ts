@@ -28,6 +28,7 @@ export type TranslationKey =
   | 'tabFlashcards'
   | 'tabProject'
   | 'tabTeam'
+  | 'tabAdvanced'
   | 'homeMining'
   | 'homeRsa'
   | 'homeFlashcards'
@@ -158,6 +159,51 @@ export type TranslationKey =
   | 'fcBadgeStreak7'
   | 'fcBadgeKnow50'
   | 'fcToastBadge'
+  | 'realityCheckTitle'
+  | 'realityCheckSubtitle'
+  | 'learningGoalsTitle'
+  | 'learningGoalsSubtitle'
+  | 'learningGoal1'
+  | 'learningGoal2'
+  | 'learningGoal3'
+  | 'learningChallenge1'
+  | 'learningChallenge2'
+  | 'learningChallenge3'
+  | 'showHint'
+  | 'hideHint'
+  | 'advTitle'
+  | 'advSubtitle'
+  | 'adv51Title'
+  | 'adv51Desc'
+  | 'adv51Attacker'
+  | 'adv51Confirmations'
+  | 'adv51Probability'
+  | 'adv51Result'
+  | 'adv51Safe'
+  | 'adv51Risky'
+  | 'adv51Note'
+  | 'advDifficultyTitle'
+  | 'advDifficultyDesc'
+  | 'advDifficultyCurrent'
+  | 'advDifficultyActual'
+  | 'advDifficultyTarget'
+  | 'advDifficultyNew'
+  | 'advDifficultyChange'
+  | 'advDifficultyNote'
+  | 'advMempoolTitle'
+  | 'advMempoolDesc'
+  | 'advMempoolFeeRate'
+  | 'advMempoolSelected'
+  | 'advMempoolTotalFee'
+  | 'advMempoolNote'
+  | 'advUtxoTitle'
+  | 'advUtxoDesc'
+  | 'advUtxoSelected'
+  | 'advUtxoTotal'
+  | 'advUtxoChange'
+  | 'advUtxoNote'
+  | 'expandAll'
+  | 'collapseAll'
 
 export const translations = {
   VN: {
@@ -190,6 +236,7 @@ export const translations = {
     tabFlashcards: 'Flashcards',
     tabProject: 'Dự án',
     tabTeam: 'Nhóm',
+    tabAdvanced: 'Nâng cao',
     homeMining: 'Đào & Đồng thuận',
     homeRsa: 'Mã hóa RSA',
     homeFlashcards: 'Quiz / Flashcards',
@@ -326,6 +373,51 @@ export const translations = {
     fcBadgeStreak7: 'Chuỗi 7 ngày',
     fcBadgeKnow50: 'Thuộc 50 thẻ',
     fcToastBadge: 'Huy hiệu mới: {badge}',
+    realityCheckTitle: 'Khác gì so với thực tế?',
+    realityCheckSubtitle: 'Lưu ý: đây là mô phỏng giáo dục, không phải blockchain thật',
+    learningGoalsTitle: 'Mục tiêu và thử thách',
+    learningGoalsSubtitle: '3 mục tiêu học tập và 2-3 thử thách có gợi ý',
+    learningGoal1: 'Hiểu cấu trúc block, Merkle root và cách hash liên kết dữ liệu',
+    learningGoal2: 'Biết cách PoW/PoS bảo vệ tính toàn vẹn chuỗi',
+    learningGoal3: 'Nhận diện điểm khác biệt giữa mô phỏng và blockchain thật',
+    learningChallenge1: 'Sửa một giao dịch ở block 1: giải thích vì sao block 2 và 3 cũng thành không hợp lệ.',
+    learningChallenge2: 'Tìm nonce cho block difficulty=4: dự đoán số lần thử kỳ vọng.',
+    learningChallenge3: 'So sánh UTXO vs Account model cho cùng một tập giao dịch.',
+    showHint: 'Xem gợi ý',
+    hideHint: 'Ẩn gợi ý',
+    advTitle: 'Chủ đề nâng cao',
+    advSubtitle: 'Tấn công 51%, điều chỉnh difficulty, mempool phí và UTXO',
+    adv51Title: 'Tấn công 51%',
+    adv51Desc: 'Xác suất attacker đuổi kịp chuỗi theo công thức whitepaper Bitcoin (Poisson). q = tỷ lệ hash của attacker, z = số xác nhận.',
+    adv51Attacker: 'Tỷ lệ hash attacker (q)',
+    adv51Confirmations: 'Số xác nhận (z)',
+    adv51Probability: 'Xác suất tấn công thành công',
+    adv51Result: 'Kết quả',
+    adv51Safe: 'An toàn',
+    adv51Risky: 'Nguy hiểm',
+    adv51Note: 'Mô phỏng dùng công thức whitepaper; mạng thật phức tạp hơn.',
+    advDifficultyTitle: 'Điều chỉnh difficulty',
+    advDifficultyDesc: 'Bitcoin điều chỉnh mỗi 2016 block (~2 tuần). New = Old × (target/actual), giới hạn ×4.',
+    advDifficultyCurrent: 'Difficulty hiện tại',
+    advDifficultyActual: 'Thời gian thực tế (giây)',
+    advDifficultyTarget: 'Thời gian mục tiêu (giây)',
+    advDifficultyNew: 'Difficulty mới',
+    advDifficultyChange: 'Thay đổi',
+    advDifficultyNote: 'Thực tế chậm hơn → difficulty giảm; nhanh hơn → tăng (giới hạn 4 lần).',
+    advMempoolTitle: 'Mempool & Phí',
+    advMempoolDesc: 'Giao dịch được chọn theo fee rate (sat/vB), cao nhất trước, trong giới hạn block.',
+    advMempoolFeeRate: 'Phí (sat/vB)',
+    advMempoolSelected: 'Đã chọn',
+    advMempoolTotalFee: 'Tổng phí',
+    advMempoolNote: 'Mô phỏng chọn tham lam theo fee rate; thực tế có RBF, CPFP.',
+    advUtxoTitle: 'UTXO vs Account',
+    advUtxoDesc: 'UTXO chọn đầu vào lớn nhất trước (greedy) để đủ số tiền mục tiêu.',
+    advUtxoSelected: 'UTXO đã chọn',
+    advUtxoTotal: 'Tổng vào',
+    advUtxoChange: 'Tiền thừa',
+    advUtxoNote: 'UTXO: song song tốt, riêng tư hơn. Account: đơn giản, trạng thái toàn cục.',
+    expandAll: 'Mở rộng tất cả',
+    collapseAll: 'Thu gọn tất cả',
   },
   EN: {
     appTitle: 'Explore blockchain',
@@ -357,6 +449,7 @@ export const translations = {
     tabFlashcards: 'Flashcards',
     tabProject: 'Project',
     tabTeam: 'Team',
+    tabAdvanced: 'Advanced',
     homeMining: 'Mining & Consensus',
     homeRsa: 'RSA Crypto',
     homeFlashcards: 'Quiz / Flashcards',
@@ -493,5 +586,50 @@ export const translations = {
     fcBadgeStreak7: '7-day streak',
     fcBadgeKnow50: 'Know 50 cards',
     fcToastBadge: 'New badge: {badge}',
+    realityCheckTitle: 'How does this differ from reality?',
+    realityCheckSubtitle: 'Note: this is an educational simulation, not a real blockchain',
+    learningGoalsTitle: 'Learning Goals & Challenges',
+    learningGoalsSubtitle: '3 learning goals and 2-3 challenges with hints',
+    learningGoal1: 'Understand block structure, Merkle root, and how hashes link data',
+    learningGoal2: 'Know how PoW/PoS protect chain integrity',
+    learningGoal3: 'Identify differences between simulation and real blockchain',
+    learningChallenge1: 'Modify a transaction in block 1: explain why blocks 2 and 3 also become invalid.',
+    learningChallenge2: 'Find nonce for block difficulty=4: predict expected attempts.',
+    learningChallenge3: 'Compare UTXO vs Account model for the same transaction set.',
+    showHint: 'Show hint',
+    hideHint: 'Hide hint',
+    advTitle: 'Advanced Topics',
+    advSubtitle: '51% attack, difficulty adjustment, mempool fees and UTXO',
+    adv51Title: '51% Attack',
+    adv51Desc: 'Probability of attacker catching up, using the Bitcoin whitepaper formula (Poisson). q = attacker hash ratio, z = confirmations.',
+    adv51Attacker: 'Attacker hash ratio (q)',
+    adv51Confirmations: 'Confirmations (z)',
+    adv51Probability: 'Attack success probability',
+    adv51Result: 'Result',
+    adv51Safe: 'Safe',
+    adv51Risky: 'Risky',
+    adv51Note: 'Simulation uses the whitepaper formula; real networks are more complex.',
+    advDifficultyTitle: 'Difficulty Adjustment',
+    advDifficultyDesc: 'Bitcoin adjusts every 2016 blocks (~2 weeks). New = Old × (target/actual), capped at 4x.',
+    advDifficultyCurrent: 'Current difficulty',
+    advDifficultyActual: 'Actual time (seconds)',
+    advDifficultyTarget: 'Target time (seconds)',
+    advDifficultyNew: 'New difficulty',
+    advDifficultyChange: 'Change',
+    advDifficultyNote: 'Slower than target → difficulty drops; faster → rises (capped 4x).',
+    advMempoolTitle: 'Mempool & Fees',
+    advMempoolDesc: 'Transactions are selected by fee rate (sat/vB), highest first, within block limit.',
+    advMempoolFeeRate: 'Fee (sat/vB)',
+    advMempoolSelected: 'Selected',
+    advMempoolTotalFee: 'Total fee',
+    advMempoolNote: 'Simulation uses greedy fee-rate selection; real networks have RBF, CPFP.',
+    advUtxoTitle: 'UTXO vs Account',
+    advUtxoDesc: 'UTXO selects largest inputs first (greedy) to reach the target amount.',
+    advUtxoSelected: 'Selected UTXOs',
+    advUtxoTotal: 'Total in',
+    advUtxoChange: 'Change',
+    advUtxoNote: 'UTXO: better parallelism, more privacy. Account: simpler, global state.',
+    expandAll: 'Expand all',
+    collapseAll: 'Collapse all',
   },
 }

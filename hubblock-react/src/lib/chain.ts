@@ -41,8 +41,17 @@ export function canonicalTransaction(transaction: Pick<Transaction, 'from' | 'to
   ])
 }
 
-export function hashTransaction(transaction: Pick<Transaction, 'from' | 'to' | 'amount'>): string {
-  return sha256(canonicalTransaction(transaction))
+export function canonicalTransactionWithNonce(transaction: Pick<Transaction, 'from' | 'to' | 'amount'>, nonce: number = 0): string {
+  return JSON.stringify([
+    transaction.from.trim().normalize('NFC').toLowerCase(),
+    transaction.to.trim().normalize('NFC').toLowerCase(),
+    canonicalAmount(transaction.amount),
+    nonce,
+  ])
+}
+
+export function hashTransaction(transaction: Pick<Transaction, 'from' | 'to' | 'amount'>, nonce: number = 0): string {
+  return sha256(canonicalTransactionWithNonce(transaction, nonce))
 }
 
 export function merkleTree(txHashes: string[]): { levels: string[][]; root: string; proofs: MerkleProofNode[][] } {
@@ -73,8 +82,21 @@ export function merkleRoot(txHashes: string[]): string {
   return merkleTree(txHashes).root
 }
 
+export function verifyMerkleProof(leaf: string, proof: MerkleProofNode[], root: string): boolean {
+  let current = leaf.toLowerCase()
+  for (const node of proof) {
+    const sibling = node.hash.toLowerCase()
+    current = node.side === 'left' ? sha256(sibling + current) : sha256(current + sibling)
+  }
+  return current === root.toLowerCase()
+}
+
+export function blockHashPreimage(block: Pick<Block, 'index' | 'timestamp' | 'previousHash' | 'merkleRoot' | 'nonce' | 'validator'>): string {
+  return `${block.index}|${block.timestamp}|${block.previousHash}|${block.merkleRoot}|${block.nonce}|${block.validator}`
+}
+
 export function hashBlock(block: Pick<Block, 'index' | 'timestamp' | 'previousHash' | 'merkleRoot' | 'nonce' | 'validator'>): string {
-  return sha256(`${block.index}${block.timestamp}${block.previousHash}${block.merkleRoot}${block.nonce}${block.validator}`)
+  return sha256(blockHashPreimage(block))
 }
 
 export function validateChain(chain: Block[], difficulty = chain[0]?.difficulty ?? 3): ChainChecks[] {
@@ -84,11 +106,30 @@ export function validateChain(chain: Block[], difficulty = chain[0]?.difficulty 
     const merkle = block.merkleRoot === merkleRoot(block.transactions.map(hashTransaction))
     const previous = block.previousHash === (index === 0 ? '0'.repeat(64) : calculatedHashes[index - 1])
     const proofOfWork = index === 0 || block.consensus === 'pos' || (block.nonce > 0 && block.hash.startsWith('0'.repeat(difficulty)))
+    
+    // Timestamp validation
+    let timestampValid = true
+    let timestampReason = ''
+    if (index > 0) {
+      const prevTimestamp = new Date(chain[index - 1].timestamp).getTime()
+      const currTimestamp = new Date(block.timestamp).getTime()
+      const now = Date.now()
+      const twoHoursMs = 2 * 60 * 60 * 1000
+      if (currTimestamp < prevTimestamp) {
+        timestampValid = false
+        timestampReason = 'Timestamp không được nhỏ hơn block trước.'
+      } else if (currTimestamp > now + twoHoursMs) {
+        timestampValid = false
+        timestampReason = 'Timestamp không được quá 2 giờ trong tương lai.'
+      }
+    }
+    
     const reasons = [
       !hash && 'Hash tính lại không khớp hash đã lưu.',
       !merkle && 'Merkle root không khớp danh sách giao dịch.',
       !previous && 'Previous hash không khớp block trước.',
       !proofOfWork && `Nonce/hash chưa đạt difficulty ${difficulty}.`,
+      !timestampValid && timestampReason,
     ].filter((reason): reason is string => Boolean(reason))
     return { hash, merkle, previous, proofOfWork, reasons, valid: reasons.length === 0 }
   })

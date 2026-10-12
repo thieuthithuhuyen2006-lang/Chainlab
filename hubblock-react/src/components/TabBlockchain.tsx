@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
-import { Clock3 } from 'lucide-react'
+import { Clock3, Check, AlertCircle, Search } from 'lucide-react'
 import MerkleTree from './MerkleTree'
 import TransactionTable from './TransactionTable'
-import { hashBlock, hashTransaction, merkleRoot, validateChain, type Block } from '../lib/chain'
+import { hashBlock, hashTransaction, merkleRoot, validateChain, blockHashPreimage, verifyMerkleProof, merkleTree, type Block } from '../lib/chain'
 import { setBlockTimestamp } from '../lib/chainStore'
 import { useChain } from '../lib/useChain'
+import RealityCheck from './RealityCheck'
+import LearningGoals from './LearningGoals'
 
 type Version = 'v1' | 'v2'
 const fieldColors: Record<string, string> = {
@@ -58,6 +60,8 @@ export default function TabBlockchain() {
   const timestamp = currentTimestampDetails(block.timestamp)
   const v1Data = block.transactions.map(({ from, to, amount }) => `${from} → ${to}: ${amount}`).join('\n') || '(empty)'
   const txHashes = useMemo(() => block.transactions.map(hashTransaction), [block.transactions])
+  const tree = useMemo(() => merkleTree(txHashes), [txHashes])
+  const makeHashes = (count: number) => Array.from({ length: count }, (_, index) => hashTransaction({ from: `A${index}`, to: `B${index}`, amount: String(index + 1) }))
   const formulaParts = [
     { key: 'index', value: String(block.index) },
     { key: 'timestamp', value: block.timestamp },
@@ -81,7 +85,7 @@ export default function TabBlockchain() {
       </section>
 
       <section className="min-w-0 space-y-3">
-        <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3"><h3 className="text-sm font-semibold text-slate-100">Công thức hash của block (Block hash formula)</h3><p className="mt-1 text-xs text-slate-400">Đúng theo code hiện tại: validator được nối vào cuối. Giao dịch được tóm tắt bởi Merkle root.</p><code className="mt-2 block break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs text-sky-200">blockHash = SHA256(index ‖ timestamp ‖ previousHash ‖ merkleRoot ‖ nonce ‖ validator)</code><div className="mt-2 flex flex-wrap gap-1.5 text-xs">{formulaParts.map(({ key, value }) => <span key={key} className={`rounded border border-slate-700 px-2 py-1 font-mono ${fieldColors[key]} ${selectedField === key ? 'ring-1 ring-amber-300' : ''}`}>{key}: {value.length > 24 ? `${value.slice(0, 10)}…${value.slice(-6)}` : value}</span>)}</div><p className="mt-2 text-xs font-semibold text-slate-300">Chuỗi nối thực tế đưa vào SHA-256 (các màu tách trường, không có dấu phân cách):</p><div className="flex flex-wrap break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs" aria-label={formulaParts.map(({ value }) => value).join('')}>{formulaParts.map(({ key, value }) => <code key={key} className={`${fieldColors[key]} ${selectedField === key ? 'rounded ring-1 ring-amber-300' : ''}`}>{value}</code>)}</div><HashLine hash={calculatedHash} label="SHA-256 output" /></div>
+        <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3"><h3 className="text-sm font-semibold text-slate-100">Công thức hash của block (Block hash formula)</h3><p className="mt-1 text-xs text-slate-400">Đúng theo code hiện tại: validator được nối vào cuối. Giao dịch được tóm tắt bởi Merkle root. Các trường phân cách bằng dấu "|".</p><code className="mt-2 block break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs text-sky-200">blockHash = SHA256(index | timestamp | previousHash | merkleRoot | nonce | validator)</code><div className="mt-2 flex flex-wrap gap-1.5 text-xs">{formulaParts.map(({ key, value }) => <span key={key} className={`rounded border border-slate-700 px-2 py-1 font-mono ${fieldColors[key]} ${selectedField === key ? 'ring-1 ring-amber-300' : ''}`}>{key}: {value.length > 24 ? `${value.slice(0, 10)}…${value.slice(-6)}` : value}</span>)}</div><p className="mt-2 text-xs font-semibold text-slate-300">Chuỗi nối thực tế đưa vào SHA-256 (có dấu phân cách "|"):</p><div className="flex flex-wrap break-all rounded-md bg-slate-950/70 p-2 font-mono text-xs" aria-label={blockHashPreimage({ index: block.index, timestamp: block.timestamp, previousHash: block.previousHash, merkleRoot: calculatedMerkle, nonce: block.nonce, validator: block.validator })}><code className={fieldColors.index}>{block.index}</code><code className="text-slate-400">|</code><code className={fieldColors.timestamp}>{block.timestamp}</code><code className="text-slate-400">|</code><code className={fieldColors.previousHash}>{block.previousHash}</code><code className="text-slate-400">|</code><code className={fieldColors.merkleRoot}>{calculatedMerkle}</code><code className="text-slate-400">|</code><code className={fieldColors.nonce}>{block.nonce}</code><code className="text-slate-400">|</code><code className={fieldColors.validator}>{block.validator}</code></div><HashLine hash={calculatedHash} label="SHA-256 output" /></div>
         <MerkleTree txHashes={txHashes} labels={block.transactions.map((transaction) => transaction.id)} selectedIndex={selectedTx} onSelect={(index) => setSelectedTx(index)} />
       </section>
     </div>
@@ -96,5 +100,62 @@ export default function TabBlockchain() {
     ].map((row) => <tr className="border-t border-slate-800" key={row[0]}>{row.map((cell, index) => <td className="p-2 text-xs leading-5 text-slate-300" key={`${row[0]}-${index}`}>{cell}</td>)}</tr>)}</tbody></table></section>
 
     <section className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/70"><h3 className="p-3 text-sm font-semibold text-slate-100">So sánh cấu trúc (Block versions)</h3><table className="w-full min-w-[620px] border-collapse text-left"><thead className="bg-slate-950/70"><tr><th className="p-2 text-xs text-slate-300">Thuộc tính</th><th className="p-2 text-xs text-slate-300">V1 · cơ bản</th><th className="p-2 text-xs text-slate-300">V2 · metadata</th></tr></thead><tbody>{[['Index', 'Có', 'Có'], ['Data / transactions', 'Data tự do', 'Danh sách giao dịch'], ['Timestamp', 'Không có', 'ISO 8601 UTC'], ['Previous hash', 'Có', 'Có'], ['Merkle root', 'Không có', 'Có'], ['Nonce + difficulty', 'Nonce', 'Nonce và độ khó PoW'], ['Validator / miner', 'Không có', 'Địa chỉ validator']].map((row) => <tr className="border-t border-slate-800" key={row[0]}>{row.map((cell, index) => <td className="p-2 text-xs text-slate-300" key={`${row[0]}-${index}`}>{cell}</td>)}</tr>)}</tbody></table><p className="px-3 pb-3 text-xs text-slate-400">Ghi chú: V2 hiện tại nối validator vào công thức hash, dù difficulty không nằm trong hash.</p></section>
+
+    <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+      <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2"><Search size={16} />Xác minh Merkle Proof (Merkle Proof Verification)</h3>
+      <p className="mt-1 text-xs text-slate-400">Chọn một giao dịch từ Merkle Tree ở trên để xem chứng minh (proof) và xác minh nó dẫn đến đúng root.</p>
+      {selectedTx !== null && txHashes[selectedTx] !== undefined && (
+        <div className="mt-3 space-y-3">
+          <div className="rounded-md border border-slate-700 bg-slate-950/60 p-3">
+            <h4 className="text-xs font-semibold text-slate-200">Chứng minh cho Tx {selectedTx + 1}</h4>
+            <p className="mt-1 text-xs text-slate-300">Leaf hash: <code className="font-mono text-sky-200">{txHashes[selectedTx]}</code></p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {tree.proofs[selectedTx].map((node, stepIndex) => (
+                <span key={stepIndex} className={`rounded border border-slate-700 px-2 py-1 font-mono text-xs ${node.side === 'left' ? 'text-fuchsia-200' : 'text-cyan-200'}`}>
+                  {node.side === 'left' ? '←' : '→'} {node.hash.slice(0, 12)}…
+                </span>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-slate-300">Tính dần: <code className="font-mono text-sky-200">{tree.root}</code></p>
+          </div>
+          <div className="rounded-md p-3" style={{ backgroundColor: verifyMerkleProof(txHashes[selectedTx], tree.proofs[selectedTx], tree.root) ? '#0f241a' : '#24151d' }}>
+            <div className="flex items-center gap-2">
+              {verifyMerkleProof(txHashes[selectedTx], tree.proofs[selectedTx], tree.root) ? <Check className="text-emerald-300" size={16} /> : <AlertCircle className="text-rose-300" size={16} />}
+              <span className="text-xs font-semibold" style={{ color: verifyMerkleProof(txHashes[selectedTx], tree.proofs[selectedTx], tree.root) ? '#6ee7b7' : '#fb7185' }}>
+                {verifyMerkleProof(txHashes[selectedTx], tree.proofs[selectedTx], tree.root) ? 'Chứng minh HỢP LỆ — leaf khớp root' : 'Chứng minh KHÔNG HỢP LỆ — leaf/root không khớp'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+
+    <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+      <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2"><AlertCircle size={16} className="text-amber-300" />Nút lẻ bị nhân đôi (Odd node duplicated) — CVE-2012-2459</h3>
+      <p className="mt-1 text-xs text-slate-400">Khi số leaf lẻ, Bitcoin nhân đôi nút cuối cùng để tạo cặp. Điều này gây ra: [A,B,C] và [A,B,C,C] có cùng root. Demo dưới đây minh họa.</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-md border border-slate-700 bg-slate-950/60 p-3">
+          <h4 className="text-xs font-semibold text-slate-200">3 giao dịch: [A, B, C]</h4>
+          <p className="mt-1 text-xs text-slate-300">Root: <code className="font-mono text-sky-200">{merkleRoot(makeHashes(3))}</code></p>
+          <p className="mt-1 text-xs text-slate-400">Cây: (A+B) + (C+C) → root</p>
+        </div>
+        <div className="rounded-md border border-slate-700 bg-slate-950/60 p-3">
+          <h4 className="text-xs font-semibold text-slate-200">4 giao dịch: [A, B, C, C] (C bị nhân đôi)</h4>
+          <p className="mt-1 text-xs text-slate-300">Root: <code className="font-mono text-sky-200">{merkleRoot([...makeHashes(3), makeHashes(3)[2]])}</code></p>
+          <p className="mt-1 text-xs text-slate-400">Cây: (A+B) + (C+C) → root</p>
+        </div>
+      </div>
+      <div className="mt-3 rounded-md p-3" style={{ backgroundColor: merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? '#0f241a' : '#24151d' }}>
+        <div className="flex items-center gap-2">
+          {merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? <Check className="text-emerald-300" size={16} /> : <AlertCircle className="text-rose-300" size={16} />}
+          <span className="text-xs font-semibold" style={{ color: merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? '#6ee7b7' : '#fb7185' }}>
+            {merkleRoot(makeHashes(3)) === merkleRoot([...makeHashes(3), makeHashes(3)[2]]) ? 'CẢNH BÁO: Cùng root — tấn công CVE-2012-2459 có thể xảy ra' : 'Root khác nhau (không mong đợi)'}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <RealityCheck />
+    <LearningGoals />
   </div>
 }

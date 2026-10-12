@@ -3,6 +3,8 @@ import { AlertTriangle, ArrowRight, Check, Copy, Eye, EyeOff, Fingerprint, KeyRo
 import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
 import { hashTransaction } from '../lib/chain'
+import RealityCheck from './RealityCheck'
+import LearningGoals from './LearningGoals'
 
 type WalletKeyPair = {
   publicKey: CryptoKey
@@ -233,6 +235,8 @@ export default function TabSignatureMerkle() {
 
       <MerkleGraph transactions={transactions} onTransactionChange={updateTransaction} />
       <p className="flex items-start gap-2 px-1 text-[9px] leading-5 text-slate-600"><ArrowRight size={12} className="mt-0.5 shrink-0 text-rose-300" />Sửa Tx₁–Tx₄ để tính lại leaf hash, parent hash và Merkle Root theo thời gian thực. Nhánh bị ảnh hưởng sẽ chuyển đỏ.</p>
+      <RealityCheck />
+      <LearningGoals />
     </div>
   )
 }

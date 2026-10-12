@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import type { ModuleId } from '../Navbar'
 import { countDifferentBits, formatHash, sha256, sha256Bytes } from '../lib/sha256'
+import RealityCheck from './RealityCheck'
+import LearningGoals from './LearningGoals'
 
 type Language = 'VN' | 'EN'
 type Props = { onNavigate: (tab: ModuleId) => void }
@@ -435,5 +437,7 @@ export default function TabSHA256({ onNavigate }: Props) {
     <aside className="sha-panel rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2.5 text-xs leading-5 text-slate-300">{t('byteNotice')} <span className="font-mono text-emerald-200">{byteCount.toLocaleString(language === 'VN' ? 'vi-VN' : 'en-US')} bytes UTF-8</span></aside>
     <TestVectors t={t} />
     <section className="sha-panel rounded-xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-sm font-semibold text-slate-100">{t('bridgeTitle')}</h3><div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><span className="rounded-md border border-slate-700 bg-slate-950/70 px-3 py-2 text-slate-200">{t('blockBefore')}</span><ArrowRight size={14} className="text-slate-400" /><span className="rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-emerald-100">{t('blockHash')}<br /><code className="font-mono text-xs">{hash.slice(0, 12)}…</code></span><ArrowRight size={14} className="text-slate-400" /><span className="rounded-md border border-slate-700 bg-slate-950/70 px-3 py-2 text-slate-200">{t('blockHeader')}<br /><strong className="text-xs text-sky-200">{t('previousHash')}</strong></span></div></div><button type="button" onClick={() => onNavigate('mining')} aria-label={t('next')} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-emerald-300/30 bg-emerald-300/[0.08] px-3 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/60"><ArrowRight size={15} />{t('next')}</button></div></section>
+    <RealityCheck />
+    <LearningGoals />
   </div>
 }

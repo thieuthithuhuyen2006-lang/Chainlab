@@ -5,6 +5,8 @@ import { hashBlock, hashTransaction, merkleRoot, validateChain } from '../lib/ch
 import { getChainSnapshot, replaceChain, resetChain, setChainDifficulty, undoChainChange, canUndoChainChange } from '../lib/chainStore'
 import { useChain } from '../lib/useChain'
 import TransactionTable from './TransactionTable'
+import RealityCheck from './RealityCheck'
+import LearningGoals from './LearningGoals'
 
 type WorkerResult =
   | { type: 'block'; index: number; attempts: number; elapsedMs: number }
@@ -95,6 +97,8 @@ export default function TabTamperTest() {
     {status && <p role="status" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-300">{status}</p>}
     {!isMining && progress.length > 0 && <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-3"><h3 className="text-sm font-semibold text-slate-100">Kết quả re-mine</h3>{progress.map((item) => <p key={item.index} className="mt-1 text-xs text-slate-300">Block #{item.index}: {item.attempts.toLocaleString()} lần thử · {item.elapsedMs.toFixed(2)} ms</p>)}</section>}
     <p className="rounded-lg border border-amber-300/15 bg-amber-300/[0.04] p-3 text-xs font-semibold leading-5 text-amber-100">Sửa block k buộc đào lại n−k block; thời gian tăng theo difficulty.</p>
+    <RealityCheck />
+    <LearningGoals />
   </div>
 }
 

@@ -9,6 +9,7 @@ import TabFlashcards from './components/TabFlashcards'
 import TabMining from './components/TabMining'
 import TabProject from './components/TabProject'
 import TabTeam from './components/TabTeam'
+import TabAdvanced from './components/TabAdvanced'
 import TabHome from './components/TabHome'
 import { useLanguage } from './lib/useLanguage'
 import { translations } from './lib/i18n'
@@ -23,6 +24,7 @@ const modules: Record<ModuleId, ModuleInfo> = {
   flashcards: { eyebrow: '04 / LEARNING DECK', title: 'Blockchain Flashcards', description: 'Ôn tập blockchain, cryptography, consensus và smart contracts.', icon: Fingerprint },
   project: { eyebrow: '05 / PROJECT OVERVIEW', title: 'HUB Blockchain Lab', description: 'Mục tiêu học tập, kiến trúc mô phỏng và phạm vi sandbox.', icon: Network },
   team: { eyebrow: '06 / PROJECT TEAM', title: 'Khoa Khoa học dữ liệu trong kinh doanh · HUB', description: 'Giảng viên hướng dẫn và nhóm thực hiện dự án.', icon: UsersRound },
+  advanced: { eyebrow: '07 / ADVANCED TOPICS', title: 'Advanced Topics', description: 'Tấn công 51%, điều chỉnh difficulty, mempool phí và UTXO vs Account.', icon: GraduationCap },
 }
 
 function ProjectInfoModal({ onClose }: { onClose: () => void }) {
@@ -56,6 +58,7 @@ function ModuleContent({ activeTab, onNavigate }: { activeTab: ModuleId; onNavig
   if (activeTab === 'rsa') return <TabCrypto />
   if (activeTab === 'flashcards') return <TabFlashcards onNavigate={onNavigate} />
   if (activeTab === 'project') return <TabProject />
+  if (activeTab === 'advanced') return <TabAdvanced />
   return <TabTeam />
 }
 
