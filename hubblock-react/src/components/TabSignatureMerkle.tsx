@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { AlertTriangle, ArrowRight, Check, Copy, Eye, EyeOff, Fingerprint, KeyRound, LockKeyhole, RefreshCw, ShieldCheck, ShieldX, WalletCards } from 'lucide-react'
 import CryptoJS from 'crypto-js'
 import MerkleTree from './MerkleTree'
@@ -70,10 +71,36 @@ function MerkleGraph({ transactions, onTransactionChange }: { transactions: stri
   const tree = useMemo(() => merkleTree(txHashes), [txHashes])
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [proofCheck, setProofCheck] = useState<{ leafIndex: number; leaf: string; proof: MerkleProofNode[]; root: string; valid: boolean } | null>(null)
+  const [walkStep, setWalkStep] = useState(0)
+  const reducedMotion = useReducedMotion()
+
+  const walkHashes = useMemo(() => {
+    if (!proofCheck) return [] as string[]
+    const running: string[] = []
+    let current = proofCheck.leaf.toLowerCase()
+    for (const node of proofCheck.proof) {
+      const sibling = node.hash.toLowerCase()
+      current = node.side === 'left' ? sha256(sibling + current) : sha256(current + sibling)
+      running.push(current)
+    }
+    return running
+  }, [proofCheck])
+
+  useEffect(() => {
+    if (!proofCheck) return
+    const total = proofCheck.proof.length
+    setWalkStep(reducedMotion ? total : 0)
+    if (reducedMotion) return
+    const timer = window.setInterval(() => {
+      setWalkStep((value) => (value >= total ? total : value + 1))
+    }, 460)
+    return () => window.clearInterval(timer)
+  }, [proofCheck, reducedMotion])
 
   function selectLeaf(index: number) {
     setSelectedIndex(index)
     setProofCheck(null)
+    setWalkStep(0)
   }
 
   function verifySelectedLeaf() {
@@ -94,10 +121,11 @@ function MerkleGraph({ transactions, onTransactionChange }: { transactions: stri
       {proofCheck && <div className="mt-3 space-y-2">
         <div className="rounded-md border border-slate-700 bg-slate-950/60 p-2.5">
           <p className="text-xs text-slate-300">Leaf (Tx {proofCheck.leafIndex + 1}): <code className="break-all font-mono text-sky-200">{proofCheck.leaf}</code></p>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">{proofCheck.proof.map((node, stepIndex) => <span key={stepIndex} className={`rounded border border-slate-700 px-2 py-1 font-mono text-xs ${node.side === 'left' ? 'text-fuchsia-200' : 'text-cyan-200'}`}>{node.side === 'left' ? '←' : '→'} {node.hash.slice(0, 12)}…</span>)}</div>
-          <p className="mt-1.5 text-xs text-slate-300">{b('Root so khớp', 'Root to match')}: <code className="break-all font-mono text-emerald-200">{proofCheck.root}</code></p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">{proofCheck.proof.map((node, stepIndex) => <motion.span key={stepIndex} initial={reducedMotion ? false : { opacity: 0, y: 6, scale: 0.9 }} animate={{ opacity: stepIndex < walkStep ? 1 : 0.2, y: 0, scale: 1 }} transition={{ duration: 0.28, ease: 'easeOut' }} className={`rounded border px-2 py-1 font-mono text-xs ${stepIndex === walkStep - 1 ? 'border-emerald-300/60 bg-emerald-300/10 shadow-[0_0_14px_rgba(110,231,183,0.18)]' : 'border-slate-700'} ${node.side === 'left' ? 'text-fuchsia-200' : 'text-cyan-200'}`}>{node.side === 'left' ? '←' : '→'} {node.hash.slice(0, 12)}…</motion.span>)}</div>
+          {walkStep > 0 && <div className="mt-2 space-y-1">{walkHashes.slice(0, walkStep).map((hash, stepIndex) => <motion.p key={stepIndex} initial={reducedMotion ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }} className="flex flex-wrap items-center gap-1.5 font-mono text-xs text-slate-400"><span className="text-slate-300">{b(`Bước ${stepIndex + 1}`, `Step ${stepIndex + 1}`)}</span><ArrowRight size={12} className="text-emerald-300/70" /><code className="break-all text-emerald-200">{hash.slice(0, 24)}…</code></motion.p>)}</div>}
+          <p className="mt-1.5 text-xs text-slate-300">{b('Root so khớp', 'Root to match')}: <code className={`break-all font-mono text-emerald-200 ${walkStep >= proofCheck.proof.length ? 'hub-merkle-root rounded px-1' : ''}`}>{proofCheck.root}</code></p>
         </div>
-        <div role="status" className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${proofCheck.valid ? 'bg-emerald-300/[0.08] text-emerald-200' : 'bg-rose-400/[0.08] text-rose-200'}`}>{proofCheck.valid ? <Check size={14} /> : <ShieldX size={14} />}{proofCheck.valid ? b('Chứng minh HỢP LỆ — đi từ leaf tái tạo đúng root', 'Proof VALID — walking up from the leaf rebuilds the root') : b('Chứng minh KHÔNG HỢP LỆ — leaf/proof/root không khớp', 'Proof INVALID — leaf/proof/root do not match')}</div>
+        <motion.div role="status" initial={reducedMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: walkStep >= proofCheck.proof.length ? 1 : 0.35, y: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }} className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold ${proofCheck.valid ? 'bg-emerald-300/[0.08] text-emerald-200' : 'bg-rose-400/[0.08] text-rose-200'}`}>{proofCheck.valid ? <Check size={14} /> : <ShieldX size={14} />}{proofCheck.valid ? b('Chứng minh HỢP LỆ — đi từ leaf tái tạo đúng root', 'Proof VALID — walking up from the leaf rebuilds the root') : b('Chứng minh KHÔNG HỢP LỆ — leaf/proof/root không khớp', 'Proof INVALID — leaf/proof/root do not match')}</motion.div>
       </div>}
     </section>
   </div>
